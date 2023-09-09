@@ -39,7 +39,7 @@ const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 
-const type = "Patient";
+const type = "Doctor";
 
 function HomeTabs() {
   return (
@@ -96,8 +96,8 @@ function HomeTabs() {
   );
 }
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   // const [type, setType] = useState("Patient");
 
   // const dispatch = useDispatch();
@@ -182,5 +182,3 @@ function App() {
     </RootSiblingParent>
   );
 }
-
-export default App;

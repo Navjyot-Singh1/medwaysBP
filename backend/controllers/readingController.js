@@ -132,5 +132,25 @@ module.exports = {
     }
   },
 
-  // Other methods if needed
+  getReadingsByPatientID: async (req, res) => {
+    try {
+      const { patientId } = req.body;
+      const readingsSnapshot = await db
+        .collection("readings")
+        .where("patientId", "==", patientId)
+        .get();
+      const readings = [];
+
+      readingsSnapshot.forEach((doc) => {
+        const readingData = doc.data();
+        const reading = { id: doc.id, ...readingData };
+        readings.push(reading);
+      });
+
+      res.json(readings);
+    } catch (error) {
+      console.error("Error getting readings:", error);
+      res.status(500).json({ error: "Error getting readings" });
+    }
+  },
 };

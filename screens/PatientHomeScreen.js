@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, FlatList, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AddNewReadingModal from "../components/Functional/AddNewReadingModal";
 import { GlobalStyles } from "../constants/styles";
 import Title from "../components/UI/Title";
+
+import axios from "axios";
+import { BACKEND_URL } from "../constants/urlConstants";
 
 const readings = [
   {
@@ -36,14 +39,45 @@ const readings = [
   },
 ];
 
-const PatientHomeScreen = () => {
+useEffect(() => {
+  fetchReadings();
+}, []);
+
+export default PatientHomeScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [readings, setReadings] = useState([]);
+  const [patientId, setPatientId] = useState("1"); // TODO: get patientId from auth context
 
   const navigation = useNavigation();
 
-  const handleAddReading = (newReading) => {
-    setReadings([...readings, newReading]);
+  const fetchReadings = async () => {
+    const requestBody = {
+      patientId: patientId,
+    };
+
+    const url = BACKEND_URL + "/api/readings/patient";
+    const response = await axios.get(url, requestBody);
+
+    console.log(response.data);
+    setReadings(response.data);
+  };
+
+  const handleAddReading = async (newReading) => {
+    // setReadings([...readings, newReading]);
+
+    const requestBody = {
+      actionsTaken: newReading.actionsTaken,
+      diastolicPressure: newReading.diastolic,
+      doctorId: newReading.doctorId,
+      patientId: newReading.patientId,
+      symptoms: newReading.symptoms,
+      systolicPressure: newReading.systolic,
+      timestamp: newReading.dateTime,
+    };
+    const url = BACKEND_URL + "/api/readings";
+    const response = await axios.post(url, requestBody);
+
+    console.log(response.data);
   };
 
   return (
@@ -82,7 +116,7 @@ const PatientHomeScreen = () => {
             </View>
           </View>
         )}
-      /> 
+      />
       <AddNewReadingModal
         visible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
@@ -146,5 +180,3 @@ const styles = StyleSheet.create({
     flex: 8,
   },
 });
-
-export default PatientHomeScreen;
