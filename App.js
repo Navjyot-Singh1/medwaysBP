@@ -18,7 +18,7 @@ import GraphsScreen from "./screens/ViewGraphsScreen";
 
 import { initializeApp } from "@firebase/app";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyBa1D7bIRM78hzLdO6ysRioTF96RHfiRqM",
   authDomain: "medways-bp-tracker-4c1fe.firebaseapp.com",
   projectId: "medways-bp-tracker-4c1fe",
@@ -28,7 +28,7 @@ const firebaseConfig = {
   measurementId: "G-6QVV4DNDYJ",
 };
 
-initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 
 const Stack = createNativeStackNavigator();
 

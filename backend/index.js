@@ -29,6 +29,10 @@ app.use("/api/readings", readingRoutes);
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
+//Routes for users
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/users", userRoutes);
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
