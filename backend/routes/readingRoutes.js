@@ -7,6 +7,6 @@ router.put("/:id", readingController.updateReading);
 router.delete("/:id", readingController.deleteReading);
 router.get("/:id", readingController.getReadingById);
 router.get("/", readingController.getAllReadings);
-router.get("/patient/", readingController.getReadingsByPatientId);
+router.get("/patient/", readingController.getReadingsByPatientID);
 
 module.exports = router;

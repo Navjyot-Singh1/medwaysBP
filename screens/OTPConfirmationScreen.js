@@ -45,6 +45,53 @@ const OTPConfirmationScreen = ({ route }) => {
     {}
   );
 
+  useEffect(() => {
+    setLoading(true); // Set loading to true when OTP sending starts
+    sendOTP(phoneNumber).then(() => setLoading(false)); // Set loading to false when OTP sending is done
+  }, [phoneNumber]);
+
+  useEffect(() => {
+    if (user) {
+      AsyncStorage.setItem("user", JSON.stringify(user));
+      AsyncStorage.setItem("userId", user.uid);
+      registerUser(type);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const { type, navType } = route.params;
+    setType(type);
+    setNavType(navType);
+    if (navType === "Login") {
+    } else {
+      if (type === "Patient") {
+        const { registrationDetails, phoneNumber, medications, patientSex } =
+          route.params;
+
+        setPatientRegistrationDetails({
+          age: registrationDetails.age.value,
+          name: registrationDetails.name.value,
+          sex: patientSex,
+          email: registrationDetails.email.value,
+          isBPPatient: registrationDetails.isBPPatient.value,
+          howLongPatient: registrationDetails.howLongPatient.value,
+          doctor: registrationDetails.doctor,
+          medications: medications,
+        });
+      } else {
+        const { registrationDetails, phoneNumber } = route.params;
+
+        setDoctorRegistrationDetails({
+          Name: registrationDetails.name.value,
+          Email: registrationDetails.email.value,
+          ClinicAddress: registrationDetails.clinicAddress.value,
+          MobileNo: phoneNumber,
+          Qualifications: registrationDetails.qualifications.value,
+        });
+      }
+    }
+  }, []);
+
   // const sendOTP = async (phoneNumber) => {
   //   try {
   //     const phoneNo = "+91" + phoneNumber;
@@ -132,53 +179,6 @@ const OTPConfirmationScreen = ({ route }) => {
       Toast.show("Registration Failed. Please try again.", toastConfigFailure);
     }
   };
-
-  useEffect(() => {
-    setLoading(true); // Set loading to true when OTP sending starts
-    sendOTP(phoneNumber).then(() => setLoading(false)); // Set loading to false when OTP sending is done
-  }, [phoneNumber]);
-
-  useEffect(() => {
-    if (user) {
-      AsyncStorage.setItem("user", JSON.stringify(user));
-      AsyncStorage.setItem("userId", user.uid);
-      registerUser(type);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    const { type, navType } = route.params;
-    setType(type);
-    setNavType(navType);
-    if (navType === "Login") {
-    } else {
-      if (type === "Patient") {
-        const { registrationDetails, phoneNumber, medications, patientSex } =
-          route.params;
-
-        setPatientRegistrationDetails({
-          age: registrationDetails.age.value,
-          name: registrationDetails.name.value,
-          sex: patientSex,
-          email: registrationDetails.email.value,
-          isBPPatient: registrationDetails.isBPPatient.value,
-          howLongPatient: registrationDetails.howLongPatient.value,
-          doctor: registrationDetails.doctor,
-          medications: medications,
-        });
-      } else {
-        const { registrationDetails, phoneNumber } = route.params;
-
-        setDoctorRegistrationDetails({
-          Name: registrationDetails.name.value,
-          Email: registrationDetails.email.value,
-          ClinicAddress: registrationDetails.clinicAddress.value,
-          MobileNo: phoneNumber,
-          Qualifications: registrationDetails.qualifications.value,
-        });
-      }
-    }
-  }, []);
 
   const resendOTP = async () => {
     try {

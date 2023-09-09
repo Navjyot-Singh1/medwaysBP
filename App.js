@@ -12,6 +12,7 @@ import ViewBPDetailsScreen from "./screens/ViewBPDetailsScreen";
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
 import OTPConfirmationScreen from "./screens/OTPConfirmationScreen";
 import { StatusBar } from "expo-status-bar";
+import { Pressable, Text } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "./constants/styles";
@@ -19,7 +20,7 @@ import GraphsScreen from "./screens/ViewGraphsScreen";
 
 import { initializeApp } from "@firebase/app";
 import LoginScreen from "./screens/LoginScreen";
-import { Provider, useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import store from "./store/store";
 import { setUser } from "./reducers/authSlice";
 
@@ -89,6 +90,24 @@ function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
+          headerRight: () => (
+            <Pressable
+              onPress={() => {
+                AsyncStorage.removeItem("user");
+                store.dispatch(setUser(null));
+              }}
+            >
+              <View style={{ marginRight: 10, flexDirection: "row" }}>
+                <Ionicons
+                  name="log-out-outline"
+                  size={24}
+                  color={"white"}
+                  style={{ marginRight: 10 }}
+                />
+                <Text style={{ color: "white" }}>Logout</Text>
+              </View>
+            </Pressable>
+          ),
           title: "Update Profile",
         }}
       />
@@ -148,15 +167,33 @@ export default function App() {
                 <Stack.Screen
                   name="PatientHome"
                   component={PatientHomeScreen}
+                  options={{
+                    title: "Home",
+                  }}
                 />
               ) : (
-                <Stack.Screen name="DoctorHome" component={DoctorHomeScreen} />
+                <Stack.Screen
+                  name="DoctorHome"
+                  component={DoctorHomeScreen}
+                  options={{
+                    title: "Select Patient",
+                  }}
+                />
               )}
 
-              <Stack.Screen name="ViewGraphsScreen" component={GraphsScreen} />
+              <Stack.Screen
+                name="ViewGraphsScreen"
+                component={GraphsScreen}
+                options={{
+                  title: "Graphical Trends",
+                }}
+              />
               <Stack.Screen
                 name="OTPConfirmationScreen"
                 component={OTPConfirmationScreen}
+                options={{
+                  title: "OTP Confirmation",
+                }}
               />
             </>
           ) : (
@@ -169,11 +206,23 @@ export default function App() {
               <Stack.Screen
                 name="Registration"
                 component={RegistrationScreen}
+                options={{
+                  title: "Registration",
+                }}
               />
-              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{
+                  title: "Login",
+                }}
+              />
               <Stack.Screen
                 name="OTPConfirmationScreen"
                 component={OTPConfirmationScreen}
+                options={{
+                  title: "OTP Confirmation",
+                }}
               />
             </>
           )}

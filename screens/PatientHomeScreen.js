@@ -39,16 +39,16 @@ const readings = [
   },
 ];
 
-useEffect(() => {
-  fetchReadings();
-}, []);
-
 export default PatientHomeScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [readings, setReadings] = useState([]);
   const [patientId, setPatientId] = useState("1"); // TODO: get patientId from auth context
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    fetchReadings();
+  }, []);
 
   const fetchReadings = async () => {
     const requestBody = {

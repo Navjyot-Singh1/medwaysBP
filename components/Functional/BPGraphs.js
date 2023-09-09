@@ -11,11 +11,7 @@ const BPGraphs = ({ readings }) => {
   const [selectedReading, setSelectedReading] = useState(null);
 
   const handleDataPointClick = ({ index }) => {
-    console.log("Clicked index:", index);
-    console.log("Readings:", readings);
-
     setSelectedReading(readings[index]);
-    console.log("Selected Reading:", selectedReading);
 
     setModalVisible(true);
   };
