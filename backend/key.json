@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "medways-bp-tracker-4c1fe",
+  "private_key_id": "b13b29e724ece3df582459c6040aeea166fc5c30",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCgGXea5oGY7Fb2\nu1gEdcY82dJ8zLl5PyEpuEAVGj+N/4Rehl3Jd0qCiXODKkfMJ8kCQfnkN0+u9RuW\nxVU94/SBBCRq4iS3HqYP+sYnCyM3S+fGfY5bEvYMkNU9J/iNol9XhOEcpZMCM+AC\nBbWgCv/kBHYatX08uWBf1cLjQHNuXOE76kh3bbvmcE2IFP6aUzZIz7yKUsWDLHhD\nnAVC9xqDhagjY7JLcTunvNCPm5KTFjwYLrVTKCRELw/zUiVPIqthODsx/UsiR7qn\n3eouqYsiJw9RuYbV/SuRFDRUABnDokhbqRqkxxzdviPMWpqdctv6YKHx0bYsGdOR\nqAKfGBwTAgMBAAECggEAAU4hj325lndJEsi57UGq1KMGio8QtlBWAymhYK88YfpC\nupKMtucvNOSo1P4PP8kerUDkcTdJFCk1rYNGVOpD+3S1wrlPiQfJysr8lf8viJkE\nG0hweTx1w+ospSb9spwvsswZ9SXUaiDA/sM5uYzdaAzDjAMNn3dltb27P0ucXCg+\n8ZF/0dTmExr3IM1tt6hgwa2rtMTTlV1pfNMkVuJlU5y3tJz92flvmyT72gmnKUVx\nMFAsxV8RCy8Oai6MPQ+xL0SdVYozrSazeXTycA5h6J8YYbO3eOXyt+DjS5Yc2v8r\nUteqPge/5Mz9O0XrKd5PoFOUtvS59KjF5RSi7TTRoQKBgQDejX4Fxe8sd+QLyUg2\nyuaUg2ibTF8wOc/NRJXBgDhnn1t3fByx1VgA1JpVAA31UVBOjG40fqW4teWQOjbE\np9EIYuaEu3nH/DU10jJBqR/y3PFyrpLWKnnqe12g6R711jrPjgVdnfOYR84v+Rml\n8B0P0dXkPo3HKJhLj+0WJIJLDQKBgQC4KSU6zM27gtuu0+Oq0JxZDRHc/izpYytj\nAtRsaC02LEoA7DbDFCWdYySbPg/qKWPTPeNNtewLMj5UJMujX54LiNHVvRoQvOPy\njS+tympDDJmdWbn6TOt7E3AO8kgmaFO97m6mT4Xu1Da2pJFhM+JcR9xhlY1sBcIE\nypRQoH27nwKBgQDJnuwV9N0arz8VgnP+19EPqQFi+EygVy+wajs2A6CWGCP4WqNw\nZLSGhBWRfiwnHFSh5M2Ol1IxxfDEukiV3uccLuViSKoqiI34RYasP7knAA1p9Ugn\n6HFtAfiv56LZ2wyKrsKjro5aXmsowQcAc0kQ5OxfDGDLljZq9mg3EDpOHQKBgHM4\n6x46/Y2QdjqQQCWjl+7vinmmXhs3/PFZ1+Zr173JQBQLtsefV1l9qm2nCvYLJ3YH\nhqwcYq8upGipDPAO5yd4VzFPu3s1c7lSNL6bopiIzaPxe7brYXoD01zGofXF2H9B\nKuHLZ5TiGcl0dbFHcR0jqPM1SuKHR7kPtnQrtf8pAoGAXwKDQbdHFpjkT7QNsKPo\nIVHQ0SLhH4xDmGLrnirNXpt83qU3c3BxBjIybYKz3xTjwWxXy02x3QqcSS4lnsNO\nxd73v0MvzfAOL11XMJXhugstCR14KxV/uNe8w8KeqoABwhzNYEXNT1WRI7Gg1TgZ\n94YyRIQFHqziNuMuAmv15O0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-etd4e@medways-bp-tracker-4c1fe.iam.gserviceaccount.com",
+  "client_id": "115385638857717412230",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-etd4e%40medways-bp-tracker-4c1fe.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
