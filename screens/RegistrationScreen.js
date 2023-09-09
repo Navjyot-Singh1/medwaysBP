@@ -122,49 +122,6 @@ export default function RegistrationScreen({ route }) {
     });
   };
 
-  const registerUser = async (registrationDetails, type) => {
-    let url = "";
-    let reqBody = {};
-    if (type === "Patient") {
-      url = BACKEND_URL + "api/patients";
-      reqBody = registrationDetails;
-    } else {
-      url = BACKEND_URL + "api/doctors";
-      reqBody = {
-        Name: registrationDetails.name.value,
-        // Email: registrationDetails.email.value,
-        Qualifications: registrationDetails.qualifications.value,
-        ClinicAddress: registrationDetails.clinicAddress.value,
-        MobileNo: registrationDetails.mobileNo.value,
-      };
-    }
-
-    try {
-      const response = await axios.post(url, reqBody);
-
-      if (response.status === 201) {
-        // Registration successful
-        Toast.show("Registration Successful", toastConfigSuccess);
-        // Redirect to the appropriate screen
-
-        let navigateTo =
-          type === "Patient" ? "PatientHome" : "OTPConfirmationScreen";
-        navigation.navigate(navigateTo, {
-          phoneNumber: registrationDetails.mobileNo.value,
-        });
-      } else {
-        // Registration failed
-        Toast.show(
-          "Registration Failed. Please try again.",
-          toastConfigFailure
-        );
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-      Toast.show("Registration Failed. Please try again.", toastConfigFailure);
-    }
-  };
-
   const handleRegistration = () => {
     if (type === "Patient") {
       if (
@@ -176,7 +133,14 @@ export default function RegistrationScreen({ route }) {
         patientSex !== "" &&
         termsAndConditions
       ) {
-        registerUser(registrationDetails, type);
+        navigation.navigate("OTPConfirmationScreen", {
+          registrationDetails: registrationDetails,
+          type: type,
+          phoneNumber: registrationDetails.mobileNo.value,
+          medications: medications,
+          patientSex: patientSex,
+          navType: "Register",
+        });
       } else if (!termsAndConditions) {
         Alert.alert("Please accept the terms and conditions");
       } else {
@@ -191,17 +155,18 @@ export default function RegistrationScreen({ route }) {
         doctorRegistrationDetails.qualifications.isValid &&
         termsAndConditions
       ) {
-        registerUser(doctorRegistrationDetails, type);
+        navigation.navigate("OTPConfirmationScreen", {
+          registrationDetails: doctorRegistrationDetails,
+          type: type,
+          phoneNumber: doctorRegistrationDetails.mobileNo.value,
+          navType: "Register",
+        });
       } else if (!termsAndConditions) {
         Alert.alert("Please accept the terms and conditions");
       } else {
         Alert.alert("Please fill all the details");
       }
     }
-  };
-
-  const handleRegistrationTest = () => {
-    navigation.navigate("PatientHome");
   };
 
   return (
@@ -357,7 +322,7 @@ export default function RegistrationScreen({ route }) {
             onToggle={handleCheckboxToggle}
           />
           <PrimaryButton
-            onPress={handleRegistrationTest}
+            onPress={handleRegistration}
             style={styles.buttonDoctorReg}
           >
             Register

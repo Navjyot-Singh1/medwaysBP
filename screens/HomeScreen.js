@@ -37,6 +37,23 @@ export default function HomeScreen({ navigation }) {
       </View>
       <View style={styles.buttonContainer}>
         <PrimaryButton
+          style={styles.button}
+          onPress={() => {
+            if (selection === "Patient") {
+              navigation.navigate("Login", {
+                type: "Patient",
+              });
+            } else {
+              navigation.navigate("Login", {
+                type: "Doctor",
+              });
+            }
+          }}
+        >
+          Login
+        </PrimaryButton>
+        <PrimaryButton
+          style={styles.button}
           onPress={() => {
             if (selection === "Patient") {
               navigation.navigate("Registration", {
@@ -79,11 +96,19 @@ const styles = StyleSheet.create({
     color: "black",
   },
   buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
     borderRadius: 24,
     padding: 6,
     marginHorizontal: 8,
     marginVertical: 2,
-    width: "50%",
-    alignSelf: "center",
+  },
+  button: {
+    marginHorizontal: 12,
+    marginVertical: 6,
+    fontSize: 20,
+    fontWeight: "bold",
+    width: "40%",
   },
 });

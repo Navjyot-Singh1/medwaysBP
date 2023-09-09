@@ -1,26 +1,53 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
+const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
   createPatient: async (req, res) => {
     try {
-      const { age, name, sex, email, howLongPatient, doctor, medications } =
-        req.body;
-
-      const newPatientData = {
+      const {
         age,
         name,
         sex,
         email,
         howLongPatient,
+        isBPPatient,
+        doctor,
+        medications,
+      } = req.body;
+      console.log("req.body:", req.body);
+      const newPatientData = {
+        age,
+        name,
+        sex,
+        email,
+        isBPPatient,
+        howLongPatient,
         doctor,
         medications,
       };
 
-      const newPatientRef = await db.collection("patients").add(newPatientData);
-      const newPatient = { id: newPatientRef.id, ...newPatientData };
+      const randomId = uuidv4();
 
-      res.json(newPatient);
+      const newPatientRef = await db
+        .collection("patients")
+        .doc(randomId.toString())
+        .set(newPatientData);
+      const newPatient = {
+        id: randomId.toString(),
+        ...newPatientData,
+      };
+
+      const userRef = db.collection("users").doc(randomId);
+      await userRef.set({
+        patientId: randomId,
+        email: email,
+        name: name,
+        type: "patient",
+        mobileNo: "",
+      });
+
+      res.status(200).json(newPatient);
     } catch (error) {
       console.error("Error creating patient:", error);
       res.status(500).json({ error: "Error creating patient" });

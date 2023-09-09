@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
+const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
   getById: async (req, res) => {
@@ -60,7 +61,7 @@ module.exports = {
               .get()
           : await db
               .collection("doctors")
-              .where("mobileNo", "==", searchQuery)
+              .where("MobileNo", "==", searchQuery)
               .get();
 
       const doctors = [];
@@ -90,21 +91,40 @@ module.exports = {
   createDoctor: async (req, res) => {
     try {
       console.log("req.body", req.body);
-      const { Name, ClinicAddress, MobileNo, Qualifications } = req.body;
+      const { Name, ClinicAddress, MobileNo, Qualifications, Email, DoctorID } =
+        req.body;
 
       const newDoctorData = {
         Name,
+        Email,
         ClinicAddress,
         MobileNo,
         Qualifications,
+        DoctorID,
       };
 
       console.log("newDoctorData", newDoctorData);
 
-      const newDoctorRef = await db.collection("doctors").add(newDoctorData);
-      const newDoctor = { id: newDoctorRef.id, ...newDoctorData };
+      const randomId = uuidv4();
 
-      res.status(201).json(newDoctor);
+      const newDoctorRef = await db
+        .collection("doctors")
+        .doc(randomId)
+        .set({
+          ...newDoctorData,
+        });
+      const newDoctor = { id: randomId, ...newDoctorData };
+
+      const userRef = db.collection("users").doc(randomId);
+      await userRef.set({
+        doctorId: randomId,
+        email: Email,
+        name: Name,
+        type: "doctor",
+        mobileNo: MobileNo,
+      });
+
+      res.status(200).json(newDoctor);
     } catch (error) {
       console.error("Error creating doctor:", error);
       res.status(500).json({ error: "Error creating doctor" });
@@ -118,6 +138,7 @@ module.exports = {
 
       const updatedDoctorData = {
         Name,
+        Email,
         ClinicAddress,
         MobileNo,
         Qualifications,

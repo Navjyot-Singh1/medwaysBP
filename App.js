@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -17,6 +18,10 @@ import { GlobalStyles } from "./constants/styles";
 import GraphsScreen from "./screens/ViewGraphsScreen";
 
 import { initializeApp } from "@firebase/app";
+import LoginScreen from "./screens/LoginScreen";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import store from "./store/store";
+import { setUser } from "./reducers/authSlice";
 
 export const firebaseConfig = {
   apiKey: "AIzaSyBa1D7bIRM78hzLdO6ysRioTF96RHfiRqM",
@@ -33,6 +38,8 @@ export const app = initializeApp(firebaseConfig);
 const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
+
+const type = "Patient";
 
 function HomeTabs() {
   return (
@@ -52,20 +59,11 @@ function HomeTabs() {
           fontSize: 14,
           // fontWeight: "bold",
         },
-
-        // headerRight: ({ tintColor }) => (
-        //   <IconButton
-        //     icon="add"
-        //     size={24}
-        //     color={tintColor}
-        //     // onPress={() => navigation.navigate("ManageExpenses")}
-        //   />
-        // ),
       })}
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={type === "Patient" ? PatientHomeScreen : DoctorHomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
@@ -86,6 +84,7 @@ function HomeTabs() {
       <Tab.Screen
         name="Update Profile"
         component={UpdateProfileScreen}
+        initialParams={{ type: type }}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
@@ -98,6 +97,32 @@ function HomeTabs() {
 }
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [type, setType] = useState("Patient");
+
+  // const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    AsyncStorage.getItem("user").then((user) => {
+      if (user) {
+        // dispatch(setUser(JSON.parse(user)));
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      AsyncStorage.setItem("user", JSON.stringify(user));
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [user]);
+
   return (
     <RootSiblingParent>
       <StatusBar style="auto" />
@@ -110,21 +135,48 @@ function App() {
             headerTintColor: "white",
           }}
         >
-          <Stack.Screen
-            name="HomeTabs"
-            component={HomeTabs}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen name="Registration" component={RegistrationScreen} />
-          <Stack.Screen name="PatientHome" component={PatientHomeScreen} />
-          <Stack.Screen name="DoctorHome" component={DoctorHomeScreen} />
-          <Stack.Screen name="ViewGraphsScreen" component={GraphsScreen} />
-          <Stack.Screen
-            name="OTPConfirmationScreen"
-            component={OTPConfirmationScreen}
-          />
+          {isLoggedIn ? (
+            <>
+              <Stack.Screen
+                name="HomeTabs"
+                component={HomeTabs}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              {type === "Patient" ? (
+                <Stack.Screen
+                  name="PatientHome"
+                  component={PatientHomeScreen}
+                />
+              ) : (
+                <Stack.Screen name="DoctorHome" component={DoctorHomeScreen} />
+              )}
+
+              <Stack.Screen name="ViewGraphsScreen" component={GraphsScreen} />
+              <Stack.Screen
+                name="OTPConfirmationScreen"
+                component={OTPConfirmationScreen}
+              />
+            </>
+          ) : (
+            <>
+              <Stack.Screen
+                name="HomeMain"
+                component={HomeScreen}
+                title="Medways BP Tracker"
+              />
+              <Stack.Screen
+                name="Registration"
+                component={RegistrationScreen}
+              />
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen
+                name="OTPConfirmationScreen"
+                component={OTPConfirmationScreen}
+              />
+            </>
+          )}
         </Stack.Navigator>
       </NavigationContainer>
     </RootSiblingParent>

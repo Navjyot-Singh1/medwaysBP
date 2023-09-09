@@ -29,12 +29,14 @@ const SearchDoctor = ({ handleSelectedDoctor }) => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   const handleSearch = async () => {
-    const url = BACKEND_URL + `/api/doctors/search`;
-
+    const url = BACKEND_URL + `api/doctors/search`;
+    console.log("url:", url);
     const reqBody = {
       query: searchQuery,
       type: selection,
     };
+
+    console.log("reqBody:", reqBody);
 
     try {
       const response = await axios.post(url, reqBody);
@@ -88,6 +90,19 @@ const SearchDoctor = ({ handleSelectedDoctor }) => {
         <PrimaryButton onPress={handleSearch} style={styles.rowInputButton}>
           Search
         </PrimaryButton>
+      </View>
+      <View>
+        {doctorsList.length > 0 && (
+          <PrimaryButton
+            onPress={() => {
+              setDoctorsList([]);
+              setSelectedDoctor(null);
+            }}
+            style={styles.rowInputButton}
+          >
+            Clear
+          </PrimaryButton>
+        )}
       </View>
       <View>
         <FlatList
