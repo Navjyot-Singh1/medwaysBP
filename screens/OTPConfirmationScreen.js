@@ -5,7 +5,7 @@ import {
   FirebaseRecaptchaVerifierModal,
   FirebaseRecaptchaBanner,
 } from "expo-firebase-recaptcha";
-import { app, firebaseConfig } from "../App";
+import { app, firebaseConfig } from "../config/firebase";
 import {
   getAuth,
   signInWithPhoneNumber,
@@ -17,7 +17,7 @@ import { BACKEND_URL } from "../constants/urlConstants";
 import axios from "axios";
 import Toast from "react-native-root-toast";
 import { toastConfigSuccess, toastConfigFailure } from "../constants/styles";
-import { setUser } from "../reducers/authSlice";
+import { setUserRedux, setUserType, setUserId } from "../reducers/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 
@@ -26,9 +26,6 @@ const OTPConfirmationScreen = ({ route }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  // // auth.languageCode = 'it';
-  // // To apply the default browser preference instead of explicitly setting it.
-  // auth.useDeviceLanguage();
   const { phoneNumber } = route.params;
   const recaptchaVerifier = React.useRef(null);
   const [otp, setOTP] = useState("");
@@ -92,37 +89,33 @@ const OTPConfirmationScreen = ({ route }) => {
     }
   }, []);
 
-  // const sendOTP = async (phoneNumber) => {
-  //   try {
-  //     const phoneNo = "+91" + phoneNumber;
-  //     // Send OTP to the provided phone number
-  //     console.log("Sending OTP to " + phoneNo + "...");
-  //     const confirmation = await signInWithPhoneNumber(
-  //       auth,
-  //       phoneNo,
-  //       recaptchaVerifier.current
-  //     );
-
-  //     setVerificationId(confirmation.verificationId);
-  //   } catch (error) {
-  //     console.error("Error sending OTP:", error);
-  //     setErrorMessage("Error sending OTP. Please try again.");
-  //   }
-  // };
-
   const sendOTP = async (phoneNumber) => {
-    console.log("Sending OTP to " + phoneNumber + "...");
-    console.log("OTP sent successfully");
+    try {
+      const phoneNo = "+91" + phoneNumber;
+      // Send OTP to the provided phone number
+      console.log("Sending OTP to " + phoneNo + "...");
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        phoneNo,
+        recaptchaVerifier.current
+      );
+
+      setVerificationId(confirmation.verificationId);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      setErrorMessage("Error sending OTP. Please try again.");
+    }
   };
+
   const verifyOTP = async () => {
     try {
-      // const credential = PhoneAuthProvider.credential(verificationId, otp);
-      // const userCredential = await signInWithCredential(auth, credential);
-      // const user = userCredential.user;
-      const user = {
-        uid: "123456789",
-      };
-      // dispatch(setUser(user));
+      const credential = PhoneAuthProvider.credential(verificationId, otp);
+      const userCredential = await signInWithCredential(auth, credential);
+      const user = userCredential.user;
+
+      dispatch(setUserRedux(user));
+      dispatch(setUserId(user.uid));
+      dispatch(setUserType(type));
       setUser(user);
 
       AsyncStorage.setItem("user", JSON.stringify(user));
@@ -134,9 +127,9 @@ const OTPConfirmationScreen = ({ route }) => {
           navigation.navigate("Home");
         } else {
           if (type === "Patient") {
-            navigation.navigate("PatientHome");
+            navigation.navigate("Home");
           } else {
-            navigation.navigate("DoctorHome");
+            navigation.navigate("Home");
           }
         }
       }, 1000);
@@ -245,7 +238,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
   },
   buttons: {
     width: "40%",

@@ -12,29 +12,15 @@ import ViewBPDetailsScreen from "./screens/ViewBPDetailsScreen";
 import UpdateProfileScreen from "./screens/UpdateProfileScreen";
 import OTPConfirmationScreen from "./screens/OTPConfirmationScreen";
 import { StatusBar } from "expo-status-bar";
-import { Pressable, Text } from "react-native";
-
+import { Pressable, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "./constants/styles";
 import GraphsScreen from "./screens/ViewGraphsScreen";
-
-import { initializeApp } from "@firebase/app";
 import LoginScreen from "./screens/LoginScreen";
 import { useSelector } from "react-redux";
 import store from "./store/store";
-import { setUser } from "./reducers/authSlice";
-
-export const firebaseConfig = {
-  apiKey: "AIzaSyBa1D7bIRM78hzLdO6ysRioTF96RHfiRqM",
-  authDomain: "medways-bp-tracker-4c1fe.firebaseapp.com",
-  projectId: "medways-bp-tracker-4c1fe",
-  storageBucket: "medways-bp-tracker-4c1fe.appspot.com",
-  messagingSenderId: "555071872161",
-  appId: "1:555071872161:web:eea9076dd25cea2570e4e0",
-  measurementId: "G-6QVV4DNDYJ",
-};
-
-export const app = initializeApp(firebaseConfig);
+import { setUserRedux } from "./reducers/authSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +29,8 @@ const Tab = createBottomTabNavigator();
 const type = "Doctor";
 
 function HomeTabs() {
+  const navigation = useNavigation();
+
   return (
     <Tab.Navigator
       screenOptions={({ navigation }) => ({
@@ -69,10 +57,10 @@ function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
-          title: "Home",
+          title: "Medways BP Tracker",
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="View BP Details"
         component={ViewBPDetailsScreen}
         options={{
@@ -81,7 +69,7 @@ function HomeTabs() {
           ),
           title: "View BP Details",
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Update Profile"
         component={UpdateProfileScreen}
@@ -94,7 +82,8 @@ function HomeTabs() {
             <Pressable
               onPress={() => {
                 AsyncStorage.removeItem("user");
-                store.dispatch(setUser(null));
+                store.dispatch(setUserRedux(null));
+                navigation.navigate("HomeMain");
               }}
             >
               <View style={{ marginRight: 10, flexDirection: "row" }}>
@@ -102,13 +91,17 @@ function HomeTabs() {
                   name="log-out-outline"
                   size={24}
                   color={"white"}
-                  style={{ marginRight: 10 }}
+                  style={{ marginRight: 5 }}
                 />
-                <Text style={{ color: "white" }}>Logout</Text>
+                <Text
+                  style={{ color: "white", fontSize: 20, fontWeight: "bold" }}
+                >
+                  Logout
+                </Text>
               </View>
             </Pressable>
           ),
-          title: "Update Profile",
+          title: "Profile",
         }}
       />
     </Tab.Navigator>

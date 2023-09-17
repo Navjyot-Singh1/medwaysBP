@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { GlobalStyles } from "../constants/styles";
 
 const LoginScreen = ({ route }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -69,13 +70,13 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     height: 60,
-    backgroundColor: "blue", // Customize the button's background color
+    backgroundColor: GlobalStyles.colors.primary500,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },
   buttonText: {
-    color: "white", // Customize the button text color
+    color: "white",
     fontSize: 18,
     fontWeight: "bold",
   },

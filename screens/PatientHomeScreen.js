@@ -73,6 +73,7 @@ export default PatientHomeScreen = () => {
       symptoms: newReading.symptoms,
       systolicPressure: newReading.systolic,
       timestamp: newReading.dateTime,
+      
     };
     const url = BACKEND_URL + "/api/readings";
     const response = await axios.post(url, requestBody);
