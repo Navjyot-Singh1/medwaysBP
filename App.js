@@ -60,16 +60,6 @@ function HomeTabs() {
           title: "Medways BP Tracker",
         }}
       />
-      {/* <Tab.Screen
-        name="View BP Details"
-        component={ViewBPDetailsScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list" size={size} color={color} />
-          ),
-          title: "View BP Details",
-        }}
-      /> */}
       <Tab.Screen
         name="Update Profile"
         component={UpdateProfileScreen}
@@ -83,7 +73,7 @@ function HomeTabs() {
               onPress={() => {
                 AsyncStorage.removeItem("user");
                 store.dispatch(setUserRedux(null));
-                navigation.navigate("HomeMain");
+                navigation.navigate("LoggedOutScreens");
               }}
             >
               <View style={{ marginRight: 10, flexDirection: "row" }}>
@@ -105,6 +95,93 @@ function HomeTabs() {
         }}
       />
     </Tab.Navigator>
+  );
+}
+
+function LoggedInScreens() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: GlobalStyles.colors.primary500,
+        },
+        headerTintColor: "white",
+        // headerShown: false,
+      }}
+    >
+      {type === "Patient" ? (
+        <Stack.Screen
+          name="PatientHome"
+          component={PatientHomeScreen}
+          options={{
+            title: "Home",
+          }}
+        />
+      ) : (
+        <Stack.Screen
+          name="DoctorHome"
+          component={DoctorHomeScreen}
+          options={{
+            title: "Select Patient",
+          }}
+        />
+      )}
+      <Stack.Screen
+        name="ViewGraphsScreen"
+        component={GraphsScreen}
+        options={{
+          title: "Graphical Trends",
+        }}
+      />
+      <Stack.Screen
+        name="OTPConfirmationScreen"
+        component={OTPConfirmationScreen}
+        options={{
+          title: "OTP Confirmation",
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function LoggedOutScreens() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: GlobalStyles.colors.primary500,
+        },
+        headerTintColor: "white",
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen
+        name="HomeMain"
+        component={HomeScreen}
+        title="Medways BP Tracker"
+      />
+      <Stack.Screen
+        name="Registration"
+        component={RegistrationScreen}
+        options={{
+          title: "Registration",
+        }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          title: "Login",
+        }}
+      />
+      <Stack.Screen
+        name="OTPConfirmationScreen"
+        component={OTPConfirmationScreen}
+        options={{
+          title: "OTP Confirmation",
+        }}
+      />
+    </Stack.Navigator>
   );
 }
 
@@ -147,78 +224,29 @@ export default function App() {
             headerTintColor: "white",
           }}
         >
-          {isLoggedIn ? (
-            <>
-              <Stack.Screen
-                name="HomeTabs"
-                component={HomeTabs}
-                options={{
-                  headerShown: false,
-                }}
-              />
-              {type === "Patient" ? (
-                <Stack.Screen
-                  name="PatientHome"
-                  component={PatientHomeScreen}
-                  options={{
-                    title: "Home",
-                  }}
-                />
-              ) : (
-                <Stack.Screen
-                  name="DoctorHome"
-                  component={DoctorHomeScreen}
-                  options={{
-                    title: "Select Patient",
-                  }}
-                />
-              )}
-
-              <Stack.Screen
-                name="ViewGraphsScreen"
-                component={GraphsScreen}
-                options={{
-                  title: "Graphical Trends",
-                }}
-              />
-              <Stack.Screen
-                name="OTPConfirmationScreen"
-                component={OTPConfirmationScreen}
-                options={{
-                  title: "OTP Confirmation",
-                }}
-              />
-            </>
-          ) : (
-            <>
-              <Stack.Screen
-                name="HomeMain"
-                component={HomeScreen}
-                title="Medways BP Tracker"
-              />
-              <Stack.Screen
-                name="Registration"
-                component={RegistrationScreen}
-                options={{
-                  title: "Registration",
-                }}
-              />
-              <Stack.Screen
-                name="Login"
-                component={LoginScreen}
-                options={{
-                  title: "Login",
-                }}
-              />
-              <Stack.Screen
-                name="OTPConfirmationScreen"
-                component={OTPConfirmationScreen}
-                options={{
-                  title: "OTP Confirmation",
-                }}
-              />
-            </>
-          )}
+          <Stack.Screen
+            name="HomeTabs"
+            component={HomeTabs}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="LoggedInScreens"
+            component={LoggedInScreens}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="LoggedOutScreens"
+            component={LoggedOutScreens}
+            options={{
+              title: "Medways BP Tracker",
+              headerBackVisible: false,
+              headerTitleAlign: "center",
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </RootSiblingParent>

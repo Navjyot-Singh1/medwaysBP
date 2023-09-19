@@ -113,23 +113,24 @@ const OTPConfirmationScreen = ({ route }) => {
       const userCredential = await signInWithCredential(auth, credential);
       const user = userCredential.user;
 
-      dispatch(setUserRedux(user));
+      // dispatch(setUserRedux(user));
       dispatch(setUserId(user.uid));
       dispatch(setUserType(type));
       setUser(user);
-
+      console.log("user", user);
+      console.log("user.uid", user.uid);
       AsyncStorage.setItem("user", JSON.stringify(user));
       AsyncStorage.setItem("userId", user.uid);
       AsyncStorage.setItem("type", type);
 
       setTimeout(() => {
         if (navType === "Login") {
-          navigation.navigate("Home");
+          navigation.navigate("LoggedInScreens");
         } else {
           if (type === "Patient") {
-            navigation.navigate("Home");
+            navigation.navigate("LoggedInScreens");
           } else {
-            navigation.navigate("Home");
+            navigation.navigate("LoggedInScreens");
           }
         }
       }, 1000);

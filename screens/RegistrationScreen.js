@@ -17,14 +17,8 @@ import SearchDoctor from "../components/Functional/SearchDoctor";
 import PrimaryButton from "../components/UI/PrimaryButton";
 import TermsAndConditionsCheckbox from "../components/Functional/TermsAndConditions";
 
-import axios from "axios";
-import { BACKEND_URL } from "../constants/urlConstants";
-import Toast from "react-native-root-toast";
 import { useNavigation } from "@react-navigation/native";
-
 import { GlobalStyles } from "../constants/styles";
-
-import { toastConfigSuccess, toastConfigFailure } from "../constants/styles";
 import MedicationRow from "../components/Functional/MedicationRow";
 
 export default function RegistrationScreen({ route }) {

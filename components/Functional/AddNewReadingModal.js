@@ -12,6 +12,7 @@ const AddNewReadingModal = ({ visible, onClose, onSave }) => {
   const [symptoms, setSymptoms] = useState("");
   const [actionsTaken, setActionsTaken] = useState("");
 
+
   const handleSave = () => {
     const newReading = {
       id: Math.random().toString(),

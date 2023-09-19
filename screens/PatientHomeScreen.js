@@ -73,7 +73,6 @@ export default PatientHomeScreen = () => {
       symptoms: newReading.symptoms,
       systolicPressure: newReading.systolic,
       timestamp: newReading.dateTime,
-      
     };
     const url = BACKEND_URL + "/api/readings";
     const response = await axios.post(url, requestBody);
@@ -92,7 +91,14 @@ export default PatientHomeScreen = () => {
         </Pressable>
         <Pressable
           style={styles.button}
-          onPress={() => navigation.navigate("ViewGraphsScreen", { readings })}
+          onPress={() =>
+            navigation.navigate("LoggedInScreens", {
+              screen: "ViewGraphsScreen",
+              params: {
+                readings: readings,
+              },
+            })
+          }
         >
           <Text style={styles.buttonText}>View Graphical Trends</Text>
         </Pressable>

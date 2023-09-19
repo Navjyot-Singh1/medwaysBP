@@ -106,6 +106,31 @@ module.exports = {
     }
   },
 
+  deleteAllPatients: async (req, res) => {
+    try {
+      const patientsSnapshot = await db.collection("patients").get();
+      const patients = [];
+
+      patientsSnapshot.forEach((doc) => {
+        patients.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+
+      await Promise.all(
+        patients.map((patient) =>
+          db.collection("patients").doc(patient.id).delete()
+        )
+      );
+
+      res.json(patients);
+    } catch (error) {
+      console.error("Error deleting all patients:", error);
+      res.status(500).json({ error: "Error deleting all patients" });
+    }
+  },
+
   getPatientById: async (req, res) => {
     try {
       const id = req.params.id;

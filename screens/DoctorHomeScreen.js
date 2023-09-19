@@ -12,6 +12,9 @@ import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../constants/styles";
 import Title from "../components/UI/Title";
 import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { BACKEND_URL } from "../constants/urlConstants";
 // import { useSelector, useDispatch } from 'react-redux';
 // import { searchPatientsAction } from '../redux/actions/patientActions';
 
@@ -127,7 +130,28 @@ const DoctorHomeScreen = () => {
   ]);
   const [filteredPatientList, setFilteredPatientList] = useState(patientList);
 
-  const handleAddReading = async (newReading) => {};
+  const handleAddReading = async (newReading) => {
+    const requestBody = {
+      actionsTaken: newReading.actionsTaken,
+      diastolicPressure: newReading.diastolic,
+      doctorId: 1,
+      patientId: 1,
+      symptoms: newReading.symptoms,
+      systolicPressure: newReading.systolic,
+      timestamp: newReading.dateTime,
+    };
+
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}api/readings`,
+        requestBody
+      );
+      const newReadingData = response.data;
+      setReadings((prevReadings) => [...prevReadings, newReadingData]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -162,7 +186,7 @@ const DoctorHomeScreen = () => {
   );
 
   return (
-    <>
+    <View style={styles.outerContainer}>
       {screen === 0 && (
         <View style={styles.container}>
           <Text style={styles.title}>Search Patients</Text>
@@ -191,7 +215,12 @@ const DoctorHomeScreen = () => {
             <Pressable
               style={styles.button}
               onPress={() =>
-                navigation.navigate("ViewGraphsScreen", { readings })
+                navigation.navigate("LoggedInScreens", {
+                  screen: "ViewGraphsScreen",
+                  params: {
+                    readings: readings,
+                  },
+                })
               }
             >
               <Text style={styles.buttonText}>View Graphical Trends</Text>
@@ -232,11 +261,15 @@ const DoctorHomeScreen = () => {
           />
         </View>
       )}
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    marginTop: 40,
+  },
   container: {
     flex: 1,
     padding: 16,
