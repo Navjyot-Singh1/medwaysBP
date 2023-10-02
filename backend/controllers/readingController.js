@@ -7,20 +7,20 @@ module.exports = {
       const {
         actionsTaken,
         diastolicPressure,
-        doctorId,
         patientId,
         symptoms,
         systolicPressure,
+        pulse,
         timestamp,
       } = req.body;
 
       const newReadingData = {
         actionsTaken,
         diastolicPressure,
-        doctorId,
         patientId,
         symptoms,
         systolicPressure,
+        pulse,
         timestamp,
       };
 
@@ -40,19 +40,19 @@ module.exports = {
       const {
         actionsTaken,
         diastolicPressure,
-        doctorId,
         patientId,
         symptoms,
         systolicPressure,
+        pulse,
         timestamp,
       } = req.body;
 
       const updatedReadingData = {
         actionsTaken,
         diastolicPressure,
-        doctorId,
         patientId,
         symptoms,
+        pulse,
         systolicPressure,
         timestamp,
       };
@@ -134,7 +134,9 @@ module.exports = {
 
   getReadingsByPatientID: async (req, res) => {
     try {
+      console.log("req.body:", req.body);
       const { patientId } = req.body;
+      console.log(patientId);
       const readingsSnapshot = await db
         .collection("readings")
         .where("patientId", "==", patientId)

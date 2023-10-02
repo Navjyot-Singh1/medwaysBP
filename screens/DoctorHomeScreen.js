@@ -15,6 +15,8 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { BACKEND_URL } from "../constants/urlConstants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // import { useSelector, useDispatch } from 'react-redux';
 // import { searchPatientsAction } from '../redux/actions/patientActions';
 
@@ -129,6 +131,7 @@ const DoctorHomeScreen = () => {
     },
   ]);
   const [filteredPatientList, setFilteredPatientList] = useState(patientList);
+  const [doctor, setDoctor] = useState({});
 
   const handleAddReading = async (newReading) => {
     const requestBody = {
@@ -137,6 +140,7 @@ const DoctorHomeScreen = () => {
       doctorId: 1,
       patientId: 1,
       symptoms: newReading.symptoms,
+      pulse: newReading.pulse,
       systolicPressure: newReading.systolic,
       timestamp: newReading.dateTime,
     };
@@ -153,10 +157,48 @@ const DoctorHomeScreen = () => {
     }
   };
 
+  const getAllPatients = async (doctorId) => {
+    //API is in the form of req.params.doctorId
+    axios
+      .get(`${BACKEND_URL}api/patients/doctors/${doctorId}`)
+      .then((response) => {
+        setPatientList(response.data);
+      })
+
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const getDoctorDetails = async () => {
+    AsyncStorage.getItem("phoneNumber").then((phoneNo) => {
+      //API is in the form of req.params.id
+      axios
+        .get(`${BACKEND_URL}api/doctors/${phoneNo}`)
+        .then((response) => {
+          setDoctor(response.data);
+        })
+
+        .catch((error) => {
+          console.error(error);
+        });
+    });
+  };
+
   // const dispatch = useDispatch();
   const navigation = useNavigation();
   // Replace with your Redux selectors
   // const patientList = useSelector(state => state.patients.patientList);
+
+  useEffect(() => {
+    getDoctorDetails();
+  }, []);
+
+  useEffect(() => {
+    if (doctor.length > 0) {
+      getAllPatients(doctor.DoctorID);
+    }
+  }, [doctor]);
 
   useEffect(() => {
     // Dispatch an action to search for patients when the component mounts or searchQuery changes
@@ -268,7 +310,7 @@ const DoctorHomeScreen = () => {
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    marginTop: 40,
+    marginTop: 20,
   },
   container: {
     flex: 1,

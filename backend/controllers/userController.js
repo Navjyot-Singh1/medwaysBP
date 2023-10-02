@@ -43,4 +43,22 @@ module.exports = {
       res.status(500).json({ error: "Error getting user by ID" });
     }
   },
+  checkUserExists: async (req, res) => {
+    try {
+      const { uid } = req.body;
+      console.log("uid:", uid);
+
+      const userRef = db.collection("users").doc(uid);
+      const userSnapshot = await userRef.get();
+
+      if (!userSnapshot.exists) {
+        return res.status(200).json({ exists: false });
+      } else {
+        return res.status(200).json({ exists: true });
+      }
+    } catch (error) {
+      console.error("Error getting user by ID:", error);
+      res.status(500).json({ error: "Error getting user by ID" });
+    }
+  },
 };

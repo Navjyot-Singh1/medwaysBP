@@ -17,20 +17,18 @@ import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "./constants/styles";
 import GraphsScreen from "./screens/ViewGraphsScreen";
 import LoginScreen from "./screens/LoginScreen";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import store from "./store/store";
-import { setUserRedux } from "./reducers/authSlice";
+import { isLoggedIn, setUserRedux } from "./reducers/authSlice";
 import { useNavigation } from "@react-navigation/native";
+import { AppContextProvider } from "./context/AppContext";
 
 const Stack = createNativeStackNavigator();
-
 const Tab = createBottomTabNavigator();
 
-const type = "Doctor";
-
-function HomeTabs() {
+function HomeTabs({ route }) {
   const navigation = useNavigation();
-
+  const { type, setLoggedIn } = route.params;
   return (
     <Tab.Navigator
       screenOptions={({ navigation }) => ({
@@ -72,6 +70,10 @@ function HomeTabs() {
             <Pressable
               onPress={() => {
                 AsyncStorage.removeItem("user");
+                AsyncStorage.removeItem("userId");
+                AsyncStorage.removeItem("type");
+                AsyncStorage.removeItem("user_type");
+                AsyncStorage.setItem("isLoggedIn", "false");
                 store.dispatch(setUserRedux(null));
                 navigation.navigate("LoggedOutScreens");
               }}
@@ -98,7 +100,9 @@ function HomeTabs() {
   );
 }
 
-function LoggedInScreens() {
+function LoggedInScreens({ route }) {
+  // const [type, setType] = useState("Patient");
+  const { type } = route.params;
   return (
     <Stack.Navigator
       screenOptions={{
@@ -186,69 +190,102 @@ function LoggedOutScreens() {
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  // const [type, setType] = useState("Patient");
+  const [type, setType] = useState(null);
+  const [user, setUser] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [appRerenderKey, setAppRerenderKey] = useState(0);
 
   // const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
+  // const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     AsyncStorage.getItem("user").then((user) => {
       if (user) {
-        // dispatch(setUser(JSON.parse(user)));
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
+        setUser(JSON.parse(user));
+        setLoggedIn(true);
       }
     });
-  }, []);
 
-  useEffect(() => {
-    if (user) {
-      AsyncStorage.setItem("user", JSON.stringify(user));
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, [user]);
+    AsyncStorage.getItem("userId").then((userId) => {
+      if (userId) {
+        setUserId(userId);
+      }
+    });
+
+    AsyncStorage.getItem("phoneNumber").then((phoneNumber) => {
+      if (phoneNumber) {
+        setPhoneNumber(phoneNumber);
+      }
+    });
+
+    AsyncStorage.getItem("user_type").then((user_type) => {
+      if (user_type) {
+        setType(user_type);
+      }
+    });
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+  }, []);
 
   return (
     <RootSiblingParent>
       <StatusBar style="auto" />
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: GlobalStyles.colors.primary500,
-            },
-            headerTintColor: "white",
-          }}
-        >
-          <Stack.Screen
-            name="HomeTabs"
-            component={HomeTabs}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="LoggedInScreens"
-            component={LoggedInScreens}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="LoggedOutScreens"
-            component={LoggedOutScreens}
-            options={{
-              title: "Medways BP Tracker",
-              headerBackVisible: false,
-              headerTitleAlign: "center",
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <AppContextProvider>
+        {!loading ? (
+          <NavigationContainer>
+            <Stack.Navigator
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: GlobalStyles.colors.primary500,
+                },
+                headerTintColor: "white",
+              }}
+            >
+              <Stack.Screen
+                name="HomeTabs"
+                component={HomeTabs}
+                options={{
+                  headerShown: false,
+                }}
+                initialParams={{ type: type }}
+              />
+              {/* {loggedIn ? ( */}
+              <Stack.Screen
+                name="LoggedInScreens"
+                component={LoggedInScreens}
+                options={{
+                  headerShown: false,
+                }}
+                initialParams={{ type: type }}
+              />
+              {/* ) : ( */}
+              <Stack.Screen
+                name="LoggedOutScreens"
+                component={LoggedOutScreens}
+                options={{
+                  title: "Medways BP Tracker",
+                  // headerBackVisible: false,
+                  headerTitleAlign: "center",
+                }}
+              />
+              {/* )} */}
+            </Stack.Navigator>
+          </NavigationContainer>
+        ) : (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+              Medways BP Tracker
+            </Text>
+          </View>
+        )}
+      </AppContextProvider>
     </RootSiblingParent>
   );
 }

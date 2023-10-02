@@ -14,6 +14,8 @@ module.exports = {
         isBPPatient,
         doctor,
         medications,
+        PatientId,
+        mobileNo,
       } = req.body;
       console.log("req.body:", req.body);
       const newPatientData = {
@@ -25,26 +27,28 @@ module.exports = {
         howLongPatient,
         doctor,
         medications,
+        PatientId,
+        mobileNo,
       };
 
-      const randomId = uuidv4();
+      // const randomId = uuidv4();
 
       const newPatientRef = await db
         .collection("patients")
-        .doc(randomId.toString())
+        .doc(PatientId)
         .set(newPatientData);
       const newPatient = {
-        id: randomId.toString(),
+        id: PatientId,
         ...newPatientData,
       };
 
-      const userRef = db.collection("users").doc(randomId);
+      const userRef = db.collection("users").doc(PatientId);
       await userRef.set({
-        patientId: randomId,
+        patientId: PatientId,
         email: email,
         name: name,
         type: "patient",
-        mobileNo: "",
+        mobileNo: mobileNo,
       });
 
       res.status(200).json(newPatient);
@@ -155,6 +159,29 @@ module.exports = {
   getAllPatients: async (req, res) => {
     try {
       const patientsSnapshot = await db.collection("patients").get();
+      const patients = [];
+
+      patientsSnapshot.forEach((doc) => {
+        const patientData = doc.data();
+        const patient = { id: doc.id, ...patientData };
+        patients.push(patient);
+      });
+
+      res.json(patients);
+    } catch (error) {
+      console.error("Error getting patients:", error);
+      res.status(500).json({ error: "Error getting patients" });
+    }
+  },
+
+  getPatientsByDoctorId: async (req, res) => {
+    try {
+      const doctorId = req.params.doctorId;
+
+      const patientsSnapshot = await db
+        .collection("patients")
+        .where("doctorId", "==", doctorId)
+        .get();
       const patients = [];
 
       patientsSnapshot.forEach((doc) => {

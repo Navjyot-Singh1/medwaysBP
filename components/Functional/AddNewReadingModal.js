@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, Modal, StyleSheet } from "react-native";
 
 import Input from "../UI/Input";
@@ -6,12 +6,18 @@ import Title from "../UI/Title";
 import PrimaryButton from "../UI/PrimaryButton";
 import { GlobalStyles } from "../../constants/styles";
 
-const AddNewReadingModal = ({ visible, onClose, onSave }) => {
-  const [systolic, setSystolic] = useState("");
-  const [diastolic, setDiastolic] = useState("");
-  const [symptoms, setSymptoms] = useState("");
-  const [actionsTaken, setActionsTaken] = useState("");
-
+const AddNewReadingModal = ({ visible, onClose, onSave, reading }) => {
+  const [systolic, setSystolic] = useState(
+    reading ? reading.systolicPressure : ""
+  );
+  const [diastolic, setDiastolic] = useState(
+    reading ? reading.diastolicPressure : ""
+  );
+  const [symptoms, setSymptoms] = useState(reading ? reading.symptoms : "");
+  const [actionsTaken, setActionsTaken] = useState(
+    reading ? reading.actionsTaken : ""
+  );
+  const [pulse, setPulse] = useState(reading ? reading.pulse : "");
 
   const handleSave = () => {
     const newReading = {
@@ -19,6 +25,7 @@ const AddNewReadingModal = ({ visible, onClose, onSave }) => {
       systolic,
       diastolic,
       symptoms,
+      pulse,
       actionsTaken,
       dateTime: new Date().toLocaleString(),
     };
@@ -42,7 +49,7 @@ const AddNewReadingModal = ({ visible, onClose, onSave }) => {
             mandatory
           />
           <Input
-            label="Diastolic"
+            label="Diastolic BP"
             textInputConfig={{
               onChangeText: (text) => setDiastolic(text),
 
@@ -51,6 +58,15 @@ const AddNewReadingModal = ({ visible, onClose, onSave }) => {
             value={diastolic}
             style={styles.rowInput}
             mandatory
+          />
+          <Input
+            label="Pulse"
+            textInputConfig={{
+              onChangeText: (text) => setPulse(text),
+              keyboardType: "numeric",
+            }}
+            value={pulse}
+            style={styles.rowInput}
           />
         </View>
         <Input
@@ -72,6 +88,16 @@ const AddNewReadingModal = ({ visible, onClose, onSave }) => {
           }}
           value={actionsTaken}
         />
+        <View style={styles.inputRowPulse}>
+          {/* <Input
+            label="Pulse"
+            textInputConfig={{
+              onChangeText: (text) => setPulse(text),
+              keyboardType: "numeric",
+            }}
+            value={pulse}
+          /> */}
+        </View>
 
         <View style={styles.buttonsContainer}>
           <Button title="Save" onPress={handleSave} style={styles.buttonSave} />
@@ -97,26 +123,33 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  inputRowPulse: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    width: "100%",
+  },
   rowInput: {
     flex: 1,
   },
   buttonsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
+    justifyContent: "space-around",
+    width: "100%",
     marginTop: 20,
   },
   buttonSave: {
-    backgroundColor: GlobalStyles.colors.primary700,
+    backgroundColor: "green",
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
+    fontSize: 16,
   },
   buttonCancel: {
     backgroundColor: GlobalStyles.colors.error500,
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
+    fontSize: 16,
   },
 });
 

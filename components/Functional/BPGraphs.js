@@ -21,11 +21,18 @@ const BPGraphs = ({ readings }) => {
     setModalVisible(false);
   };
 
-  const systolicData = readings.map((reading) => reading.systolic);
-  const diastolicData = readings.map((reading) => reading.diastolic);
+  const systolicData = readings.map((reading) => reading.systolicPressure);
+  const diastolicData = readings.map((reading) => reading.diastolicPressure);
 
   const chartData = {
-    labels: readings.map((reading) => reading.dateTime), // Assuming timestamp is a string
+    labels: readings.map((reading) =>
+      //Split the timestamp string to get only the date part and then split the date part with the delimiter '/' to get the month and day and then join them with the delimiter '-' to get the date in the format 'MM-DD'
+      {
+        let date = reading.timestamp.split(",")[0];
+        let dateParts = date.split("/");
+        return dateParts[1] + "-" + dateParts[0];
+      }
+    ),
     datasets: [
       {
         data: systolicData,
@@ -79,6 +86,7 @@ const BPGraphs = ({ readings }) => {
         yAxisLabel="Pressure"
         yAxisSuffix="mmHg"
       /> */}
+
       <LineChart
         data={chartData}
         width={screenWidth}
@@ -88,6 +96,9 @@ const BPGraphs = ({ readings }) => {
         yAxisLabel="Pressure"
         yAxisSuffix="mmHg"
         onDataPointClick={handleDataPointClick}
+        style={{
+          marginHorizontal: 2,
+        }}
       />
       {/* <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}> */}
@@ -96,19 +107,21 @@ const BPGraphs = ({ readings }) => {
         {selectedReading ? (
           <View style={styles.selectedReadingContainer}>
             <Text style={styles.selectedReadingItem}>
-              Systolic: {selectedReading.systolic}
+              Systolic: {selectedReading.systolicPressure}
             </Text>
             <Text style={styles.selectedReadingItem}>
-              Diastolic: {selectedReading.diastolic}
+              Diastolic: {selectedReading.diastolicPressure}
             </Text>
             <Text style={styles.selectedReadingItem}>
               Symptoms: {selectedReading.symptoms}
             </Text>
             {/* Add pulse here */}
             <Text style={styles.selectedReadingItem}>
+              Pulse: {selectedReading.pulse}
+            </Text>
+            <Text style={styles.selectedReadingItem}>
               Actions Taken: {selectedReading.actionsTaken}
             </Text>
-            {/* Add other details here */}
           </View>
         ) : (
           <Text style={styles.noReadingSelected}>No reading selected</Text>
@@ -123,6 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    marginHorizontal: 5,
   },
   selectedReadingContainer: {
     backgroundColor: "white",

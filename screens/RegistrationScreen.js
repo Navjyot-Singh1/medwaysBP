@@ -16,7 +16,8 @@ import Dropdown from "../components/UI/Dropdown";
 import SearchDoctor from "../components/Functional/SearchDoctor";
 import PrimaryButton from "../components/UI/PrimaryButton";
 import TermsAndConditionsCheckbox from "../components/Functional/TermsAndConditions";
-
+import { BACKEND_URL } from "../constants/urlConstants";
+import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../constants/styles";
 import MedicationRow from "../components/Functional/MedicationRow";
@@ -83,6 +84,7 @@ export default function RegistrationScreen({ route }) {
   const [medications, setMedications] = useState([
     { medicationName: "", howOften: "" },
   ]);
+  const [userExists, setUserExists] = useState(false);
 
   const genderOptions = [
     { text: "Male", value: "Male" },
@@ -117,50 +119,73 @@ export default function RegistrationScreen({ route }) {
   };
 
   const handleRegistration = () => {
-    if (type === "Patient") {
-      if (
-        registrationDetails.name.isValid &&
-        registrationDetails.age.isValid &&
-        registrationDetails.mobileNo.isValid &&
-        registrationDetails.address.isValid &&
-        registrationDetails.email.isValid &&
-        patientSex !== "" &&
-        termsAndConditions
-      ) {
-        navigation.navigate("OTPConfirmationScreen", {
-          registrationDetails: registrationDetails,
-          type: type,
-          phoneNumber: registrationDetails.mobileNo.value,
-          medications: medications,
-          patientSex: patientSex,
-          navType: "Register",
-        });
-      } else if (!termsAndConditions) {
-        Alert.alert("Please accept the terms and conditions");
-      } else {
-        Alert.alert("Please fill all the details");
-      }
-    } else {
-      if (
-        doctorRegistrationDetails.name.isValid &&
-        doctorRegistrationDetails.mobileNo.isValid &&
-        doctorRegistrationDetails.email.isValid &&
-        doctorRegistrationDetails.clinicAddress.isValid &&
-        doctorRegistrationDetails.qualifications.isValid &&
-        termsAndConditions
-      ) {
-        navigation.navigate("OTPConfirmationScreen", {
-          registrationDetails: doctorRegistrationDetails,
-          type: type,
-          phoneNumber: doctorRegistrationDetails.mobileNo.value,
-          navType: "Register",
-        });
-      } else if (!termsAndConditions) {
-        Alert.alert("Please accept the terms and conditions");
-      } else {
-        Alert.alert("Please fill all the details");
-      }
-    }
+    //Check if the mobile number is already registered and do not allow registration if it is already registered
+
+    const url = BACKEND_URL + "api/users/check";
+    const requestBody = {
+      uid:
+        type === "Patient"
+          ? registrationDetails.mobileNo.value
+          : doctorRegistrationDetails.mobileNo.value,
+    };
+
+    axios
+      .post(url, requestBody)
+      .then((response) => {
+        console.log(response.data);
+        if (response.data.exists) {
+          Alert.alert(
+            "This mobile number is already registered. Please login instead."
+          );
+          return;
+        } else if (type === "Patient") {
+          if (
+            registrationDetails.name.isValid &&
+            registrationDetails.age.isValid &&
+            registrationDetails.mobileNo.isValid &&
+            registrationDetails.address.isValid &&
+            registrationDetails.email.isValid &&
+            patientSex !== "" &&
+            termsAndConditions
+          ) {
+            navigation.navigate("OTPConfirmationScreen", {
+              registrationDetails: registrationDetails,
+              type: type,
+              phoneNumber: registrationDetails.mobileNo.value,
+              medications: medications,
+              patientSex: patientSex,
+              navType: "Register",
+            });
+          } else if (!termsAndConditions) {
+            Alert.alert("Please accept the terms and conditions");
+          } else {
+            Alert.alert("Please fill all the details");
+          }
+        } else {
+          if (
+            doctorRegistrationDetails.name.isValid &&
+            doctorRegistrationDetails.mobileNo.isValid &&
+            doctorRegistrationDetails.email.isValid &&
+            doctorRegistrationDetails.clinicAddress.isValid &&
+            doctorRegistrationDetails.qualifications.isValid &&
+            termsAndConditions
+          ) {
+            navigation.navigate("OTPConfirmationScreen", {
+              registrationDetails: doctorRegistrationDetails,
+              type: type,
+              phoneNumber: doctorRegistrationDetails.mobileNo.value,
+              navType: "Register",
+            });
+          } else if (!termsAndConditions) {
+            Alert.alert("Please accept the terms and conditions");
+          } else {
+            Alert.alert("Please fill all the details");
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (

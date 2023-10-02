@@ -20,6 +20,7 @@ import { toastConfigSuccess, toastConfigFailure } from "../constants/styles";
 import { setUserRedux, setUserType, setUserId } from "../reducers/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { useAppContext } from "../context/AppContext";
 
 const OTPConfirmationScreen = ({ route }) => {
   const auth = getAuth(app);
@@ -41,6 +42,8 @@ const OTPConfirmationScreen = ({ route }) => {
   const [doctorRegistrationDetails, setDoctorRegistrationDetails] = useState(
     {}
   );
+
+  const { forceRerender } = useAppContext();
 
   useEffect(() => {
     setLoading(true); // Set loading to true when OTP sending starts
@@ -74,6 +77,7 @@ const OTPConfirmationScreen = ({ route }) => {
           howLongPatient: registrationDetails.howLongPatient.value,
           doctor: registrationDetails.doctor,
           medications: medications,
+          mobileNo: phoneNumber,
         });
       } else {
         const { registrationDetails, phoneNumber } = route.params;
@@ -117,14 +121,17 @@ const OTPConfirmationScreen = ({ route }) => {
       dispatch(setUserId(user.uid));
       dispatch(setUserType(type));
       setUser(user);
-      console.log("user", user);
-      console.log("user.uid", user.uid);
       AsyncStorage.setItem("user", JSON.stringify(user));
       AsyncStorage.setItem("userId", user.uid);
-      AsyncStorage.setItem("type", type);
+      AsyncStorage.setItem("user_type", type);
+      AsyncStorage.setItem("phoneNumber", phoneNumber);
+
+      console.log("userId", AsyncStorage.getItem("userId"));
+      console.log("user_type", AsyncStorage.getItem("user_type"));
 
       setTimeout(() => {
         if (navType === "Login") {
+          forceRerender();
           navigation.navigate("LoggedInScreens");
         } else {
           if (type === "Patient") {
@@ -146,12 +153,13 @@ const OTPConfirmationScreen = ({ route }) => {
       url = BACKEND_URL + "api/patients";
       reqBody = {
         ...patientRegistrationDetails,
+        PatientId: phoneNumber,
       };
     } else {
       url = BACKEND_URL + "api/doctors";
       reqBody = {
         ...doctorRegistrationDetails,
-        DoctorID: user.uid,
+        DoctorID: phoneNumber,
       };
     }
 

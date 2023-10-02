@@ -7,6 +7,7 @@ import { GlobalStyles } from "../constants/styles";
 import Input from "../components/UI/Input";
 import Dropdown from "../components/UI/Dropdown";
 import PrimaryButton from "../components/UI/PrimaryButton";
+import SearchDoctor from "../components/Functional/SearchDoctor";
 
 export default function UpdateProfileScreen({ route }) {
   const { type } = route.params;
@@ -172,20 +173,22 @@ export default function UpdateProfileScreen({ route }) {
             value={registrationDetails.address.value}
             invalid={!registrationDetails.address.isValid}
           />
-          <Input
-            label="E-mail"
-            textInputConfig={{
-              onChangeText: (text) =>
-                setRegistrationDetails({
-                  ...registrationDetails,
-                  email: { value: text.toString(), isValid: true },
-                }),
-              keyboardType: "email-address",
-            }}
-            value={registrationDetails.email.value}
-            style={styles.rowInput}
-            invalid={!registrationDetails.email.isValid}
-          />
+          <View style={styles.inputsRow}>
+            <Input
+              label="E-mail"
+              textInputConfig={{
+                onChangeText: (text) =>
+                  setRegistrationDetails({
+                    ...registrationDetails,
+                    email: { value: text.toString(), isValid: true },
+                  }),
+                keyboardType: "email-address",
+              }}
+              value={registrationDetails.email.value}
+              style={styles.rowInput}
+              invalid={!registrationDetails.email.isValid}
+            />
+          </View>
           <View style={styles.inputsRowExtra}>
             <Input
               label="Are you a BP Patient?"
