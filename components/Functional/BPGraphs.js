@@ -23,6 +23,7 @@ const BPGraphs = ({ readings }) => {
 
   const systolicData = readings.map((reading) => reading.systolicPressure);
   const diastolicData = readings.map((reading) => reading.diastolicPressure);
+  const pulseData = readings.map((reading) => reading.pulse);
 
   const chartData = {
     labels: readings.map((reading) =>
@@ -42,6 +43,11 @@ const BPGraphs = ({ readings }) => {
       {
         data: diastolicData,
         color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+        strokeWidth: 2,
+      },
+      {
+        data: pulseData,
+        color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,
         strokeWidth: 2,
       },
     ],
@@ -66,7 +72,7 @@ const BPGraphs = ({ readings }) => {
   };
 
   const chartConfig = {
-    backgroundGradientFrom: "#1E2923",
+    backgroundGradientFrom: "#08130D",
     backgroundGradientFromOpacity: 0,
     backgroundGradientTo: "#08130D",
     backgroundGradientToOpacity: 0.5,
@@ -93,8 +99,8 @@ const BPGraphs = ({ readings }) => {
         height={400}
         chartConfig={chartConfig}
         bezier
-        yAxisLabel="Pressure"
-        yAxisSuffix="mmHg"
+        // yAxisLabel="Pressure"
+        // yAxisSuffix="mmHg"
         onDataPointClick={handleDataPointClick}
         style={{
           marginHorizontal: 2,
@@ -136,7 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: 5,
+    // marginHorizontal: 5,
   },
   selectedReadingContainer: {
     backgroundColor: "white",
@@ -152,7 +158,6 @@ const styles = StyleSheet.create({
   },
   noReadingSelected: {
     fontSize: 20,
-
     textAlign: "center",
   },
 });

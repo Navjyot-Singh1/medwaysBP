@@ -176,13 +176,15 @@ module.exports = {
 
   getPatientsByDoctorId: async (req, res) => {
     try {
+      console.log("req.params", req.params);
       const doctorId = req.params.doctorId;
+      console.log("doctorId", doctorId);
 
       const patientsSnapshot = await db
         .collection("patients")
-        .where("doctorId", "==", doctorId)
+        .where("doctor", "==", doctorId)
         .get();
-      const patients = [];
+      let patients = [];
 
       patientsSnapshot.forEach((doc) => {
         const patientData = doc.data();

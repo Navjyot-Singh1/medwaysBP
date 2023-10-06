@@ -5,9 +5,12 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../constants/styles";
+import axios from "axios";
+import { BACKEND_URL } from "../constants/urlConstants";
 
 const LoginScreen = ({ route }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -15,11 +18,31 @@ const LoginScreen = ({ route }) => {
   const { type } = route.params;
 
   const handleProceed = () => {
-    navigation.navigate("OTPConfirmationScreen", {
-      phoneNumber: mobileNumber,
-      type: type,
-      navType: "Login",
-    });
+    if (mobileNumber.length !== 10 || isNaN(mobileNumber)) {
+      alert("Please enter a valid mobile number.");
+      return;
+    }
+
+    checkIfUserExists();
+  };
+
+  const checkIfUserExists = () => {
+    const url = `${BACKEND_URL}api/${type.toLowerCase()}s/${mobileNumber}`;
+
+    axios
+      .get(url)
+      .then((res) => {
+        if (res.status === 404) {
+          Alert.alert("User does not exist. Please register first.");
+        } else {
+          navigation.navigate("OTPConfirmationScreen", {
+            phoneNumber: mobileNumber,
+            type: type,
+            navType: "Login",
+          });
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (

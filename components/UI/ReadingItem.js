@@ -20,6 +20,7 @@ const ReadingItem = ({ reading, onReadingClick }) => {
     <TouchableOpacity onPress={handleReadingClick}>
       <View style={styles.container}>
         <View style={styles.left}>
+          <Text>Symptoms: {reading.symptoms}</Text>
           <Text>{timestamp}</Text>
         </View>
         <View style={styles.right}>
@@ -27,7 +28,7 @@ const ReadingItem = ({ reading, onReadingClick }) => {
           <Text>
             Blood Pressure: {systolicPressure}/{diastolicPressure}
           </Text>
-          <Text>Actions Taken: {actionsTaken}</Text>
+          <Text>{actionsTaken}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -50,6 +51,9 @@ const styles = {
   },
   right: {
     flex: 1,
+  },
+  heading: {
+    fontWeight: "bold",
   },
 };
 

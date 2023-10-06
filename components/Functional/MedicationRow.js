@@ -13,12 +13,18 @@ const MedicationRow = ({
     <View style={styles.medicationRow}>
       <TextInput
         style={styles.inputLeft}
+        placeholder="Tab/Cap"
+        value={medication.tabCap}
+        onChangeText={(text) => onMedicationChange(index, "tabCap", text)}
+      />
+      {/* <TextInput
+        style={styles.inputCenter}
         placeholder="Medication Name"
         value={medication.medicationName}
         onChangeText={(text) =>
           onMedicationChange(index, "medicationName", text)
         }
-      />
+      /> */}
       <TextInput
         style={styles.inputRight}
         placeholder="How Often"
@@ -54,6 +60,14 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: GlobalStyles.colors.primary200,
   },
+  inputCenter: {
+    width: "55%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    backgroundColor: GlobalStyles.colors.primary200,
+  },
+
   removeButton: {
     fontSize: 20,
     fontWeight: "bold",

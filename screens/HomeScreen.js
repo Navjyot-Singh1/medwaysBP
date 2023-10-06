@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import React, { useState } from "react";
 import Title from "../components/UI/Title";
 
@@ -9,8 +9,11 @@ export default function HomeScreen({ navigation }) {
   const [selection, setSelection] = useState("Patient");
   return (
     <>
-      <View>
+      {/* <View style={styles.titleContainer}>
         <Title>Medways BP Monitoring App</Title>
+      </View> */}
+      <View style={styles.imageContainer}>
+        <Image source={require("../assets/Logo.png")} style={styles.image} />
       </View>
       <View>
         <Text style={styles.paragraphText}>
@@ -19,6 +22,9 @@ export default function HomeScreen({ navigation }) {
           thereby achieving targets and reducing risk. This app is free to use.
         </Text>
       </View>
+      {/* <View style={styles.imageContainer}>
+        <Image source={require("../assets/Logo.png")} style={styles.image} />
+      </View> */}
       <View style={styles.radioButtonContainer}>
         <RadioButton.Item
           label="Patient"
@@ -110,5 +116,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     width: "40%",
+  },
+  imageContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 12,
+  },
+  image: {
+    width: 60,
+    height: 60,
+  },
+  titleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    marginHorizontal: 12,
+    marginVertical: 6,
   },
 });

@@ -31,7 +31,8 @@ const OTPConfirmationScreen = ({ route }) => {
   const recaptchaVerifier = React.useRef(null);
   const [otp, setOTP] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [verificationId, setVerificationId] = useState("");
   const [user, setUser] = useState(null);
   const [type, setType] = useState("");
@@ -43,12 +44,12 @@ const OTPConfirmationScreen = ({ route }) => {
     {}
   );
 
-  const { forceRerender } = useAppContext();
+  const { forceRerender, login, logout } = useAppContext();
 
   useEffect(() => {
     setLoading(true); // Set loading to true when OTP sending starts
     sendOTP(phoneNumber).then(() => setLoading(false)); // Set loading to false when OTP sending is done
-  }, [phoneNumber]);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -97,7 +98,7 @@ const OTPConfirmationScreen = ({ route }) => {
     try {
       const phoneNo = "+91" + phoneNumber;
       // Send OTP to the provided phone number
-      console.log("Sending OTP to " + phoneNo + "...");
+
       const confirmation = await signInWithPhoneNumber(
         auth,
         phoneNo,
@@ -106,7 +107,7 @@ const OTPConfirmationScreen = ({ route }) => {
 
       setVerificationId(confirmation.verificationId);
     } catch (error) {
-      console.error("Error sending OTP:", error);
+      // console.error("Error sending OTP:", error);
       setErrorMessage("Error sending OTP. Please try again.");
     }
   };
@@ -126,21 +127,16 @@ const OTPConfirmationScreen = ({ route }) => {
       AsyncStorage.setItem("user_type", type);
       AsyncStorage.setItem("phoneNumber", phoneNumber);
 
-      console.log("userId", AsyncStorage.getItem("userId"));
-      console.log("user_type", AsyncStorage.getItem("user_type"));
+      login();
+      // setIsLoading(true);
 
-      setTimeout(() => {
-        if (navType === "Login") {
-          forceRerender();
-          navigation.navigate("LoggedInScreens");
-        } else {
-          if (type === "Patient") {
-            navigation.navigate("LoggedInScreens");
-          } else {
-            navigation.navigate("LoggedInScreens");
-          }
-        }
-      }, 1000);
+      // setIsLoading(false);
+      if (navType === "Login") {
+        forceRerender();
+        navigation.navigate("LoggedInScreens");
+      } else {
+        navigation.navigate("LoggedInScreens");
+      }
     } catch (error) {
       setErrorMessage(`Error signing in with OTP: ${error}`);
     }
@@ -177,8 +173,8 @@ const OTPConfirmationScreen = ({ route }) => {
         );
       }
     } catch (error) {
-      console.error("An error occurred:", error);
-      Toast.show("Registration Failed. Please try again.", toastConfigFailure);
+      // console.error("An error occurred:", error);
+      // Toast.show("Registration Failed. Please try again.", toastConfigFailure);
     }
   };
 
@@ -195,33 +191,59 @@ const OTPConfirmationScreen = ({ route }) => {
 
       setVerificationId(confirmation.verificationId);
     } catch (error) {
-      console.error("Error sending OTP:", error);
+      // console.error("Error sending OTP:", error);
       setErrorMessage("Error sending OTP. Please try again.");
     }
   };
 
   return (
     <View style={styles.container}>
-      <FirebaseRecaptchaVerifierModal
-        ref={recaptchaVerifier}
-        firebaseConfig={firebaseConfig}
-        // attemptInvisibleVerification
-      />
-      <Text style={styles.title}>Enter the OTP sent to {phoneNumber}</Text>
-      <TextInput
-        placeholder="Enter OTP"
-        value={otp}
-        onChangeText={(text) => setOTP(text)}
-        keyboardType="number-pad"
-        style={styles.input}
-      />
-      {errorMessage ? (
-        <Text style={{ color: "red" }}>{errorMessage}</Text>
-      ) : null}
-      <View style={styles.buttonContainer}>
-        <Button title="Confirm" onPress={verifyOTP} style={styles.buttons} />
-        <Button title="Resend OTP" onPress={resendOTP} style={styles.buttons} />
-      </View>
+      {!isLoading ? (
+        <>
+          <FirebaseRecaptchaVerifierModal
+            ref={recaptchaVerifier}
+            firebaseConfig={firebaseConfig}
+            // attemptInvisibleVerification
+          />
+          <Text style={styles.title}>Enter the OTP sent to {phoneNumber}</Text>
+          <TextInput
+            placeholder="Enter OTP"
+            value={otp}
+            onChangeText={(text) => setOTP(text)}
+            keyboardType="number-pad"
+            style={styles.input}
+          />
+          {errorMessage ? (
+            <Text style={{ color: "red", marginVertical: 8 }}>
+              {errorMessage}
+            </Text>
+          ) : null}
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Confirm"
+              onPress={verifyOTP}
+              style={styles.buttons}
+            />
+            <Button
+              title="Resend OTP"
+              onPress={resendOTP}
+              style={styles.buttons}
+            />
+          </View>
+        </>
+      ) : (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Image
+            source={require("../assets/Logo.png")}
+            style={{ width: 120, height: 100, marginVertical: 10 }}
+          />
+          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+            Medways BP Tracker
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

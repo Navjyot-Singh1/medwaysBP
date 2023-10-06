@@ -8,9 +8,6 @@ router.delete("/:id", patientController.deletePatient);
 // router.delete("/", patientController.deleteAllPatients);
 router.get("/:id", patientController.getPatientById);
 router.get("/", patientController.getAllPatients);
-router.get(
-  "/patients/doctors/:doctorId",
-  patientController.getPatientsByDoctorId
-);
+router.get("/doctors/:doctorId", patientController.getPatientsByDoctorId);
 
 module.exports = router;

@@ -5,6 +5,7 @@ import Input from "../UI/Input";
 import Title from "../UI/Title";
 import PrimaryButton from "../UI/PrimaryButton";
 import { GlobalStyles } from "../../constants/styles";
+import Dropdown from "../UI/Dropdown";
 
 const AddNewReadingModal = ({ visible, onClose, onSave, reading }) => {
   const [systolic, setSystolic] = useState(
@@ -18,6 +19,24 @@ const AddNewReadingModal = ({ visible, onClose, onSave, reading }) => {
     reading ? reading.actionsTaken : ""
   );
   const [pulse, setPulse] = useState(reading ? reading.pulse : "");
+
+  const symptomsOptions = [
+    { text: "None", value: "None" },
+    { text: "Headache", value: "Headache" },
+    { text: "Dizziness", value: "Dizziness" },
+    { text: "Blurred Vision", value: "Blurred Vision" },
+    { text: "Nausea", value: "Nausea" },
+    { text: "Vomiting", value: "Vomiting" },
+    { text: "Chest Pain", value: "Chest Pain" },
+    { text: "Shortness of Breath", value: "Shortness of Breath" },
+  ];
+
+  const actionsOptions = [
+    { text: "None", value: "None" },
+    { text: "Took extra dose", value: "Took extra dose" },
+    { text: "Stopped BP Drug", value: "Stopped BP Drug" },
+    { text: "Visited Doctor/Hospital", value: "Visited Doctor/Hospital" },
+  ];
 
   const handleSave = () => {
     const newReading = {
@@ -33,10 +52,20 @@ const AddNewReadingModal = ({ visible, onClose, onSave, reading }) => {
     onClose();
   };
 
+  useEffect(() => {
+    if (reading) {
+      setSystolic(reading.systolicPressure);
+      setDiastolic(reading.diastolicPressure);
+      setSymptoms(reading.symptoms);
+      setActionsTaken(reading.actionsTaken);
+      setPulse(reading.pulse);
+    }
+  }, [reading]);
+
   return (
     <Modal visible={visible} animationType="slide">
       <View style={styles.container}>
-        <Title>Add New BP Reading</Title>
+        <Title>{reading ? "Update BP Reading" : "Add New BP Reading"}</Title>
         <View style={styles.inputsRow}>
           <Input
             label="Systolic BP"
@@ -69,7 +98,23 @@ const AddNewReadingModal = ({ visible, onClose, onSave, reading }) => {
             style={styles.rowInput}
           />
         </View>
-        <Input
+        <View style={styles.inputsRow}>
+          <Dropdown
+            label="Symptoms"
+            onChanged={setSymptoms}
+            options={symptomsOptions}
+            value={symptoms}
+            style={styles.rowInput}
+          />
+          <Dropdown
+            label="Actions Taken"
+            onChanged={setActionsTaken}
+            options={actionsOptions}
+            value={actionsTaken}
+            style={styles.rowInput}
+          />
+        </View>
+        {/* <Input
           label="Symptoms"
           textInputConfig={{
             onChangeText: (text) => setSymptoms(text),
@@ -77,8 +122,8 @@ const AddNewReadingModal = ({ visible, onClose, onSave, reading }) => {
             multiline: true,
           }}
           value={symptoms}
-        />
-        <Input
+        /> */}
+        {/* <Input
           label="Actions Taken"
           textInputConfig={{
             onChangeText: (text) => setActionsTaken(text),
@@ -87,7 +132,7 @@ const AddNewReadingModal = ({ visible, onClose, onSave, reading }) => {
             multiline: true,
           }}
           value={actionsTaken}
-        />
+        /> */}
         <View style={styles.inputRowPulse}>
           {/* <Input
             label="Pulse"

@@ -11,7 +11,7 @@ module.exports = {
       const doctorSnapshot = await doctorRef.get();
 
       if (!doctorSnapshot.exists) {
-        return res.status(404).json({ error: "Doctor not found Testing" });
+        return res.status(404).json({ error: "Doctor not found"});
       }
 
       const doctorData = doctorSnapshot.data();

@@ -7,6 +7,7 @@ import {
   Pressable,
   FlatList,
   ScrollView,
+  Platform,
 } from "react-native";
 import React, { useState } from "react";
 import Title from "../components/UI/Title";
@@ -92,7 +93,10 @@ export default function RegistrationScreen({ route }) {
   ];
 
   const addMedicationRow = () => {
-    setMedications([...medications, { medicationName: "", howOften: "" }]);
+    setMedications([
+      ...medications,
+      { medicationName: "", howOften: "", tabCap: "" },
+    ]);
   };
 
   const removeMedicationRow = (index) => {
@@ -313,6 +317,7 @@ export default function RegistrationScreen({ route }) {
           <View>
             {/* <Text style={styles.inputLabel}>Current Medications</Text> */}
             <View style={styles.tableHeader}>
+              <Text style={styles.tableHeaderCell}>Tab/Cap</Text>
               <Text style={styles.tableHeaderCell}>Medicine</Text>
               <Text style={styles.tableHeaderCell}>Frequency</Text>
             </View>
@@ -330,7 +335,12 @@ export default function RegistrationScreen({ route }) {
             />
             <Pressable
               onPress={addMedicationRow}
-              style={styles.addButtonContainer}
+              android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
+              style={({ pressed }) => [
+                styles.addButtonContainer,
+                Platform.OS === "android" &&
+                  pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+              ]}
             >
               <Text style={styles.addButton}>Add Medication +</Text>
             </Pressable>

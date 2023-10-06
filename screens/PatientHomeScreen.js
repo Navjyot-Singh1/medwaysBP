@@ -117,8 +117,6 @@ export default PatientHomeScreen = () => {
   };
 
   const handleAddReading = async (newReading) => {
-    // setReadings([...readings, newReading]);
-
     const requestBody = {
       actionsTaken: newReading.actionsTaken,
       diastolicPressure: newReading.diastolic,
@@ -171,13 +169,23 @@ export default PatientHomeScreen = () => {
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
         <Pressable
-          style={styles.button}
+          android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
+          style={({ pressed }) => [
+            styles.button,
+            Platform.OS === "android" &&
+              pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+          ]}
           onPress={() => setIsModalVisible(true)}
         >
           <Text style={styles.buttonText}>Add New BP Reading</Text>
         </Pressable>
         <Pressable
-          style={styles.button}
+          android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
+          style={({ pressed }) => [
+            styles.button,
+            Platform.OS === "android" &&
+              pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+          ]}
           onPress={() =>
             navigation.navigate("LoggedInScreens", {
               screen: "ViewGraphsScreen",

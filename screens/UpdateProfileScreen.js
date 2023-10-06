@@ -1,6 +1,6 @@
 import { View, Text, Pressable, FlatList, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { GlobalStyles } from "../constants/styles";
@@ -8,11 +8,13 @@ import Input from "../components/UI/Input";
 import Dropdown from "../components/UI/Dropdown";
 import PrimaryButton from "../components/UI/PrimaryButton";
 import SearchDoctor from "../components/Functional/SearchDoctor";
+import { useAppContext } from "../context/AppContext";
 
 export default function UpdateProfileScreen({ route }) {
-  const { type } = route.params;
+  // const { type } = route.params;
   const navigation = useNavigation();
   const user = AsyncStorage.getItem("user");
+  const { type, loggedInUserDetails } = useAppContext();
 
   const [registrationDetails, setRegistrationDetails] = useState({
     name: {
@@ -70,6 +72,65 @@ export default function UpdateProfileScreen({ route }) {
   const [patientSex, setPatientSex] = useState("");
   const [medications, setMedications] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState("");
+
+  useEffect(() => {
+    if (type === "Patient") {
+      setRegistrationDetails({
+        name: {
+          value: loggedInUserDetails.name,
+          isValid: true,
+        },
+        age: {
+          value: loggedInUserDetails.age,
+          isValid: true,
+        },
+        mobileNo: {
+          value: loggedInUserDetails.mobileNo,
+          isValid: true,
+        },
+        address: {
+          value: loggedInUserDetails.address,
+          isValid: true,
+        },
+        email: {
+          value: loggedInUserDetails.email,
+          isValid: true,
+        },
+        isBPPatient: {
+          value: loggedInUserDetails.isBPPatient,
+          isValid: true,
+        },
+        howLongPatient: {
+          value: loggedInUserDetails.howLongPatient,
+          isValid: true,
+        },
+        doctor: loggedInUserDetails.doctor,
+      });
+    } else {
+      setDoctorRegistrationDetails({
+        name: {
+          value: loggedInUserDetails.Name,
+          isValid: true,
+        },
+        mobileNo: {
+          value: loggedInUserDetails.MobileNo,
+          isValid: true,
+        },
+        email: {
+          value: loggedInUserDetails.Email,
+          isValid: true,
+        },
+        clinicAddress: {
+          value: loggedInUserDetails.ClinicAddress,
+          isValid: true,
+        },
+        qualifications: {
+          value: loggedInUserDetails.Qualifications,
+          isValid: true,
+        },
+      });
+    }
+  }, []);
 
   const genderOptions = [
     { text: "Male", value: "Male" },
