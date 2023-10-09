@@ -5,7 +5,16 @@ import { GlobalStyles } from "../../constants/styles";
 import Picker from "@ouroboros/react-native-picker";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function Dropdown({
+function PickerDisplay({ placeholder }) {
+  return (
+    <View>
+      <Text>{placeholder}</Text>
+      <Ionicons name="hourglass" size={24} color="black" />
+    </View>
+  );
+}
+
+export default function DropdownRegistration({
   label,
   options,
   style,
@@ -15,12 +24,12 @@ export default function Dropdown({
 }) {
   return (
     <View style={[styles.inputContainer, style]}>
-      <Text style={[styles.inputLabel]}>
+      {/* <Text style={[styles.inputLabel]}>
         {label}
         {mandatory ? (
           <Text style={{ color: "red", fontWeight: "bold" }}> *</Text>
         ) : null}
-      </Text>
+      </Text> */}
       <Picker
         // component={PickerDisplay}
         style={styles.pickerStyles}
@@ -34,19 +43,19 @@ export default function Dropdown({
 
 const styles = StyleSheet.create({
   inputContainer: {
-    marginVertical: 8,
-    marginHorizontal: 4,
+    // marginVertical: 8,
+    // marginHorizontal: 4,
   },
   inputLabel: {
-    fontSize: 16,
+    // fontSize: 16,
     marginBottom: 4,
     color: GlobalStyles.colors.primary800,
   },
   pickerStyles: {
     backgroundColor: GlobalStyles.colors.primary200,
-    padding: 6,
+    // padding: 6,
     borderRadius: 6,
-    fontSize: 18,
+    // fontSize: 18,
     color: "black",
   },
 });

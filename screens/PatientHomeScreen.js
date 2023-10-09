@@ -6,6 +6,8 @@ import {
   FlatList,
   StyleSheet,
   Alert,
+  TouchableOpacity,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AddNewReadingModal from "../components/Functional/AddNewReadingModal";
@@ -17,45 +19,59 @@ import axios from "axios";
 import { BACKEND_URL } from "../constants/urlConstants";
 import ReadingItem from "../components/UI/ReadingItem";
 
-const readings = [
-  {
-    id: "1",
-    dateTime: "2021-05-01 10:00",
-    systolic: 120,
-    diastolic: 80,
-    actionsTaken: "Took medication",
-  },
-  {
-    id: "2",
-    dateTime: "2021-05-02 10:00",
-    systolic: 130,
-    diastolic: 90,
-    actionsTaken: "Took medication and exercised along with diet control",
-  },
-  {
-    id: "3",
-    dateTime: "2021-05-03 10:00",
-    systolic: 140,
-    diastolic: 100,
-    actionsTaken: "Took medication",
-  },
-  {
-    id: "4",
-    dateTime: "2021-05-04 10:00",
-    systolic: 150,
-    diastolic: 110,
-    actionsTaken: "Took medication",
-  },
-];
-
 export default PatientHomeScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [readings, setReadings] = useState([]);
   const [selectedReading, setSelectedReading] = useState();
   const [patientId, setPatientId] = useState();
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
+
+  const sortArrayByTimestampDescending = (array) => {
+    // Custom comparison function
+    function compareTimestamps(a, b) {
+      // Split timestamp strings into parts
+      const partsA = a.timestamp.split(/[/, : ]+/);
+      const partsB = b.timestamp.split(/[/, : ]+/);
+
+      // Extract date and time components
+      const monthA = parseInt(partsA[0]);
+      const dayA = parseInt(partsA[1]);
+      const yearA = parseInt(partsA[2]);
+      const hourA = parseInt(partsA[3]);
+      const minuteA = parseInt(partsA[4]);
+      const secondA = parseInt(partsA[5]);
+
+      const monthB = parseInt(partsB[0]);
+      const dayB = parseInt(partsB[1]);
+      const yearB = parseInt(partsB[2]);
+      const hourB = parseInt(partsB[3]);
+      const minuteB = parseInt(partsB[4]);
+      const secondB = parseInt(partsB[5]);
+
+      // Create Date objects
+      const dateA = new Date(yearA, monthA - 1, dayA, hourA, minuteA, secondA);
+      const dateB = new Date(yearB, monthB - 1, dayB, hourB, minuteB, secondB);
+
+      // Compare in descending order
+      if (dateA > dateB) {
+        return -1;
+      } else if (dateA < dateB) {
+        return 1;
+      }
+      return 0;
+    }
+
+    // Sort the array using the custom comparison function
+    array.sort(compareTimestamps);
+
+    return array;
+  };
+
+  const ButtonComponent =
+    Platform.OS === "android" ? Pressable : TouchableOpacity;
 
   useEffect(() => {
     const fetchPatientId = async () => {
@@ -168,23 +184,25 @@ export default PatientHomeScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
-        <Pressable
+        <ButtonComponent
           android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
           style={({ pressed }) => [
             styles.button,
             Platform.OS === "android" &&
               pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+            Platform.OS === "ios" && pressed && { opacity: 0.5 },
           ]}
           onPress={() => setIsModalVisible(true)}
         >
           <Text style={styles.buttonText}>Add New BP Reading</Text>
-        </Pressable>
-        <Pressable
+        </ButtonComponent>
+        <ButtonComponent
           android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
           style={({ pressed }) => [
             styles.button,
             Platform.OS === "android" &&
               pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+            Platform.OS === "ios" && pressed && { opacity: 0.5 },
           ]}
           onPress={() =>
             navigation.navigate("LoggedInScreens", {
@@ -196,7 +214,7 @@ export default PatientHomeScreen = () => {
           }
         >
           <Text style={styles.buttonText}>View Graphical Trends</Text>
-        </Pressable>
+        </ButtonComponent>
       </View>
       <Title>BP Readings</Title>
 
@@ -211,7 +229,7 @@ export default PatientHomeScreen = () => {
         </View>
       ) : (
         <FlatList
-          data={readings}
+          data={sortArrayByTimestampDescending(readings)}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             // <View>

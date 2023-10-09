@@ -193,262 +193,269 @@ export default function RegistrationScreen({ route }) {
   };
 
   return (
-    <ScrollView style={styles.outerContainer}>
-      <View>
-        <Title>
-          {type === "Patient" ? "Patient Registration" : "Doctor Registration"}
-        </Title>
-      </View>
-      {type === "Patient" && (
-        <>
-          <View style={styles.inputsRow}>
-            <Input
-              label="Name"
-              textInputConfig={{
-                onChangeText: (text) =>
-                  setRegistrationDetails({
-                    ...registrationDetails,
-                    name: { value: text.toString(), isValid: true },
-                  }),
-              }}
-              value={registrationDetails.name.value}
-              style={styles.rowInput}
-              invalid={!registrationDetails.name.isValid}
-              mandatory
-            />
-            <Input
-              label="Age"
-              textInputConfig={{
-                onChangeText: (text) =>
-                  setRegistrationDetails({
-                    ...registrationDetails,
-                    age: { value: text.toString(), isValid: true },
-                  }),
-                keyboardType: "numeric",
-              }}
-              value={registrationDetails.age.value}
-              style={styles.rowInput}
-              invalid={!registrationDetails.age.isValid}
-              mandatory
-            />
-          </View>
-          <View style={styles.inputsRow}>
-            <Dropdown
-              label="Sex"
-              onChanged={setPatientSex}
-              options={genderOptions}
-              style={styles.rowInput}
-              value={patientSex}
-              placeholder="Select Gender"
-              mandatory
-            />
-            <Input
-              label="Mobile Number"
-              textInputConfig={{
-                onChangeText: (text) =>
-                  setRegistrationDetails({
-                    ...registrationDetails,
-                    mobileNo: { value: text.toString(), isValid: true },
-                  }),
-                keyboardType: "numeric",
-              }}
-              value={registrationDetails.mobileNo.value}
-              style={styles.rowInput}
-              invalid={!registrationDetails.mobileNo.isValid}
-              mandatory
-            />
-          </View>
-          <Input
-            label="Address"
-            textInputConfig={{
-              onChangeText: (text) =>
-                setRegistrationDetails({
-                  ...registrationDetails,
-                  address: { value: text.toString(), isValid: true },
-                }),
-              // placeholder: "Enter your address",
-              multiline: true,
-            }}
-            value={registrationDetails.address.value}
-            invalid={!registrationDetails.address.isValid}
-          />
-          <Input
-            label="E-mail"
-            textInputConfig={{
-              onChangeText: (text) =>
-                setRegistrationDetails({
-                  ...registrationDetails,
-                  email: { value: text.toString(), isValid: true },
-                }),
-              keyboardType: "email-address",
-            }}
-            value={registrationDetails.email.value}
-            style={styles.rowInput}
-            invalid={!registrationDetails.email.isValid}
-          />
-          <View style={styles.inputsRowExtra}>
-            <Input
-              label="Are you a BP Patient?"
-              textInputConfig={{
-                onChangeText: (text) =>
-                  setRegistrationDetails({
-                    ...registrationDetails,
-                    isBPPatient: { value: text.toString(), isValid: true },
-                  }),
-              }}
-              value={registrationDetails.isBPPatient.value}
-              style={styles.rowInput}
-              invalid={!registrationDetails.isBPPatient.isValid}
-            />
-            <Input
-              label="Patient since how long?"
-              textInputConfig={{
-                onChangeText: (text) =>
-                  setRegistrationDetails({
-                    ...registrationDetails,
-                    howLongPatient: { value: text.toString(), isValid: true },
-                  }),
-              }}
-              value={registrationDetails.howLongPatient.value}
-              style={styles.rowInput}
-              invalid={!registrationDetails.howLongPatient.isValid}
-            />
-          </View>
-          <View>
-            {/* <Text style={styles.inputLabel}>Current Medications</Text> */}
-            <View style={styles.tableHeader}>
-              <Text style={styles.tableHeaderCell}>Tab/Cap</Text>
-              <Text style={styles.tableHeaderCell}>Medicine</Text>
-              <Text style={styles.tableHeaderCell}>Frequency</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <ScrollView style={styles.outerContainer}>
+        <View>
+          <Title>
+            {type === "Patient"
+              ? "Patient Registration"
+              : "Doctor Registration"}
+          </Title>
+        </View>
+        {type === "Patient" && (
+          <>
+            <View style={styles.inputsRow}>
+              <Input
+                label="Name"
+                textInputConfig={{
+                  onChangeText: (text) =>
+                    setRegistrationDetails({
+                      ...registrationDetails,
+                      name: { value: text.toString(), isValid: true },
+                    }),
+                }}
+                value={registrationDetails.name.value}
+                style={styles.rowInput}
+                invalid={!registrationDetails.name.isValid}
+                mandatory
+              />
+              <Input
+                label="Age"
+                textInputConfig={{
+                  onChangeText: (text) =>
+                    setRegistrationDetails({
+                      ...registrationDetails,
+                      age: { value: text.toString(), isValid: true },
+                    }),
+                  keyboardType: "numeric",
+                }}
+                value={registrationDetails.age.value}
+                style={styles.rowInput}
+                invalid={!registrationDetails.age.isValid}
+                mandatory
+              />
             </View>
-            <FlatList
-              data={medications}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item, index }) => (
-                <MedicationRow
-                  medication={item}
-                  index={index}
-                  onMedicationChange={handleMedicationChange}
-                  onRemoveMedication={removeMedicationRow}
-                />
-              )}
-            />
-            <Pressable
-              onPress={addMedicationRow}
-              android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
-              style={({ pressed }) => [
-                styles.addButtonContainer,
-                Platform.OS === "android" &&
-                  pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
-              ]}
-            >
-              <Text style={styles.addButton}>Add Medication +</Text>
-            </Pressable>
-          </View>
-          <SearchDoctor handleSelectedDoctor={handleSelectedDoctor} />
-          <TermsAndConditionsCheckbox
-            isChecked={termsAndConditions}
-            onToggle={handleCheckboxToggle}
-          />
-          <PrimaryButton
-            onPress={handleRegistration}
-            style={styles.buttonDoctorReg}
-          >
-            Register
-          </PrimaryButton>
-        </>
-      )}
-
-      {type === "Doctor" && (
-        <>
-          <View style={styles.inputsRow}>
+            <View style={styles.inputsRow}>
+              <Dropdown
+                label="Sex"
+                onChanged={setPatientSex}
+                options={genderOptions}
+                style={styles.rowInput}
+                value={patientSex}
+                placeholder="Select Gender"
+                mandatory
+              />
+              <Input
+                label="Mobile Number"
+                textInputConfig={{
+                  onChangeText: (text) =>
+                    setRegistrationDetails({
+                      ...registrationDetails,
+                      mobileNo: { value: text.toString(), isValid: true },
+                    }),
+                  keyboardType: "numeric",
+                }}
+                value={registrationDetails.mobileNo.value}
+                style={styles.rowInput}
+                invalid={!registrationDetails.mobileNo.isValid}
+                mandatory
+              />
+            </View>
             <Input
-              label="Name"
+              label="Address"
               textInputConfig={{
                 onChangeText: (text) =>
-                  setDoctorRegistrationDetails({
-                    ...doctorRegistrationDetails,
-                    name: { value: text.toString(), isValid: true },
+                  setRegistrationDetails({
+                    ...registrationDetails,
+                    address: { value: text.toString(), isValid: true },
                   }),
+                // placeholder: "Enter your address",
+                multiline: true,
               }}
-              value={doctorRegistrationDetails.name.value}
-              style={styles.rowInput}
-              invalid={!doctorRegistrationDetails.name.isValid}
-              mandatory
-            />
-            <Input
-              label="Qualifications"
-              textInputConfig={{
-                onChangeText: (text) =>
-                  setDoctorRegistrationDetails({
-                    ...doctorRegistrationDetails,
-                    qualifications: { value: text.toString(), isValid: true },
-                  }),
-              }}
-              value={doctorRegistrationDetails.qualifications.value}
-              style={styles.rowInput}
-              invalid={!doctorRegistrationDetails.qualifications.isValid}
-              mandatory
-            />
-          </View>
-          <Input
-            label="Clinic Address"
-            textInputConfig={{
-              onChangeText: (text) =>
-                setDoctorRegistrationDetails({
-                  ...doctorRegistrationDetails,
-                  clinicAddress: { value: text.toString(), isValid: true },
-                }),
-              // placeholder: "Enter your clinicAddress",
-              multiline: true,
-            }}
-            value={doctorRegistrationDetails.clinicAddress.value}
-            invalid={!doctorRegistrationDetails.clinicAddress.isValid}
-          />
-          <View style={styles.inputsRow}>
-            <Input
-              label="Mobile Number"
-              textInputConfig={{
-                onChangeText: (text) =>
-                  setDoctorRegistrationDetails({
-                    ...doctorRegistrationDetails,
-                    mobileNo: { value: text.toString(), isValid: true },
-                  }),
-                keyboardType: "numeric",
-              }}
-              value={doctorRegistrationDetails.mobileNo.value}
-              style={styles.rowInput}
-              invalid={!doctorRegistrationDetails.mobileNo.isValid}
-              mandatory
+              value={registrationDetails.address.value}
+              invalid={!registrationDetails.address.isValid}
             />
             <Input
               label="E-mail"
               textInputConfig={{
                 onChangeText: (text) =>
-                  setDoctorRegistrationDetails({
-                    ...doctorRegistrationDetails,
+                  setRegistrationDetails({
+                    ...registrationDetails,
                     email: { value: text.toString(), isValid: true },
                   }),
                 keyboardType: "email-address",
               }}
-              value={doctorRegistrationDetails.email.value}
+              value={registrationDetails.email.value}
               style={styles.rowInput}
-              invalid={!doctorRegistrationDetails.email.isValid}
+              invalid={!registrationDetails.email.isValid}
             />
-          </View>
-          <TermsAndConditionsCheckbox
-            isChecked={termsAndConditions}
-            onToggle={handleCheckboxToggle}
-          />
-          <PrimaryButton
-            onPress={handleRegistration}
-            style={styles.buttonDoctorReg}
-          >
-            Register
-          </PrimaryButton>
-        </>
-      )}
-    </ScrollView>
+            <View style={styles.inputsRowExtra}>
+              <Input
+                label="Are you a BP Patient?"
+                textInputConfig={{
+                  onChangeText: (text) =>
+                    setRegistrationDetails({
+                      ...registrationDetails,
+                      isBPPatient: { value: text.toString(), isValid: true },
+                    }),
+                }}
+                value={registrationDetails.isBPPatient.value}
+                style={styles.rowInput}
+                invalid={!registrationDetails.isBPPatient.isValid}
+              />
+              <Input
+                label="Patient since how long?"
+                textInputConfig={{
+                  onChangeText: (text) =>
+                    setRegistrationDetails({
+                      ...registrationDetails,
+                      howLongPatient: { value: text.toString(), isValid: true },
+                    }),
+                }}
+                value={registrationDetails.howLongPatient.value}
+                style={styles.rowInput}
+                invalid={!registrationDetails.howLongPatient.isValid}
+              />
+            </View>
+            <View>
+              {/* <Text style={styles.inputLabel}>Current Medications</Text> */}
+              <View style={styles.tableHeader}>
+                <Text style={styles.tableHeaderCell}>Tab/Cap</Text>
+                <Text style={styles.tableHeaderCell}>Medicine</Text>
+                <Text style={styles.tableHeaderCell}>Frequency</Text>
+              </View>
+              <FlatList
+                data={medications}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <MedicationRow
+                    medication={item}
+                    index={index}
+                    onMedicationChange={handleMedicationChange}
+                    onRemoveMedication={removeMedicationRow}
+                  />
+                )}
+              />
+              <Pressable
+                onPress={addMedicationRow}
+                android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
+                style={({ pressed }) => [
+                  styles.addButtonContainer,
+                  Platform.OS === "android" &&
+                    pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+                ]}
+              >
+                <Text style={styles.addButton}>Add Medication +</Text>
+              </Pressable>
+            </View>
+            <SearchDoctor handleSelectedDoctor={handleSelectedDoctor} />
+            <TermsAndConditionsCheckbox
+              isChecked={termsAndConditions}
+              onToggle={handleCheckboxToggle}
+            />
+            <PrimaryButton
+              onPress={handleRegistration}
+              style={styles.buttonDoctorReg}
+            >
+              Register
+            </PrimaryButton>
+          </>
+        )}
+
+        {type === "Doctor" && (
+          <>
+            <View style={styles.inputsRow}>
+              <Input
+                label="Name"
+                textInputConfig={{
+                  onChangeText: (text) =>
+                    setDoctorRegistrationDetails({
+                      ...doctorRegistrationDetails,
+                      name: { value: text.toString(), isValid: true },
+                    }),
+                }}
+                value={doctorRegistrationDetails.name.value}
+                style={styles.rowInput}
+                invalid={!doctorRegistrationDetails.name.isValid}
+                mandatory
+              />
+              <Input
+                label="Qualifications"
+                textInputConfig={{
+                  onChangeText: (text) =>
+                    setDoctorRegistrationDetails({
+                      ...doctorRegistrationDetails,
+                      qualifications: { value: text.toString(), isValid: true },
+                    }),
+                }}
+                value={doctorRegistrationDetails.qualifications.value}
+                style={styles.rowInput}
+                invalid={!doctorRegistrationDetails.qualifications.isValid}
+                mandatory
+              />
+            </View>
+            <Input
+              label="Clinic Address"
+              textInputConfig={{
+                onChangeText: (text) =>
+                  setDoctorRegistrationDetails({
+                    ...doctorRegistrationDetails,
+                    clinicAddress: { value: text.toString(), isValid: true },
+                  }),
+                // placeholder: "Enter your clinicAddress",
+                multiline: true,
+              }}
+              value={doctorRegistrationDetails.clinicAddress.value}
+              invalid={!doctorRegistrationDetails.clinicAddress.isValid}
+            />
+            <View style={styles.inputsRow}>
+              <Input
+                label="Mobile Number"
+                textInputConfig={{
+                  onChangeText: (text) =>
+                    setDoctorRegistrationDetails({
+                      ...doctorRegistrationDetails,
+                      mobileNo: { value: text.toString(), isValid: true },
+                    }),
+                  keyboardType: "numeric",
+                }}
+                value={doctorRegistrationDetails.mobileNo.value}
+                style={styles.rowInput}
+                invalid={!doctorRegistrationDetails.mobileNo.isValid}
+                mandatory
+              />
+              <Input
+                label="E-mail"
+                textInputConfig={{
+                  onChangeText: (text) =>
+                    setDoctorRegistrationDetails({
+                      ...doctorRegistrationDetails,
+                      email: { value: text.toString(), isValid: true },
+                    }),
+                  keyboardType: "email-address",
+                }}
+                value={doctorRegistrationDetails.email.value}
+                style={styles.rowInput}
+                invalid={!doctorRegistrationDetails.email.isValid}
+              />
+            </View>
+            <TermsAndConditionsCheckbox
+              isChecked={termsAndConditions}
+              onToggle={handleCheckboxToggle}
+            />
+            <PrimaryButton
+              onPress={handleRegistration}
+              style={styles.buttonDoctorReg}
+            >
+              Register
+            </PrimaryButton>
+          </>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -499,13 +506,15 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderWidth: 1,
     borderColor: "black",
+    width: "50%",
+    alignSelf: "center",
   },
   addButton: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "bold",
     color: "black",
     textAlign: "center",
-    marginBottom: 20,
+    margin: 10,
   },
   inputLabel: {
     fontSize: 16,
@@ -523,5 +532,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: GlobalStyles.colors.primary800,
+  },
+  container: {
+    flex: 1,
   },
 });

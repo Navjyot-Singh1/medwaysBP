@@ -278,9 +278,9 @@ export default function UpdateProfileScreen({ route }) {
               invalid={!registrationDetails.howLongPatient.isValid}
             />
           </View>
-          <View>
-            {/* <Text style={styles.inputLabel}>Current Medications</Text> */}
-            <View style={styles.tableHeader}>
+          {/* <View> */}
+          {/* <Text style={styles.inputLabel}>Current Medications</Text> */}
+          {/* <View style={styles.tableHeader}>
               <Text style={styles.tableHeaderCell}>Medicine</Text>
               <Text style={styles.tableHeaderCell}>Frequency</Text>
             </View>
@@ -302,8 +302,8 @@ export default function UpdateProfileScreen({ route }) {
             >
               <Text style={styles.addButton}>Add Medication +</Text>
             </Pressable>
-          </View>
-          <SearchDoctor handleSelectedDoctor={handleSelectedDoctor} />
+          </View> */}
+          {/* <SearchDoctor handleSelectedDoctor={handleSelectedDoctor} /> */}
 
           <PrimaryButton onPress={handleUpdate} style={styles.buttonDoctorReg}>
             Update

@@ -2,6 +2,8 @@ import React from "react";
 import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
 
 import { GlobalStyles } from "../../constants/styles";
+import Dropdown from "../UI/Dropdown";
+import DropdownRegistration from "../UI/DropdownRegistration";
 
 const MedicationRow = ({
   medication,
@@ -9,30 +11,47 @@ const MedicationRow = ({
   onMedicationChange,
   onRemoveMedication,
 }) => {
+  const tabCapOptions = [
+    { text: "Tab", value: "Tab" },
+    { text: "Cap", value: "Cap" },
+  ];
+
+  const frequencyOptions = [
+    { text: "1-0-0", value: "1-0-0" },
+    { text: "0-1-0", value: "0-1-0" },
+    { text: "0-0-1", value: "0-0-1" },
+    { text: "1-1-0", value: "1-1-0" },
+    { text: "1-0-1", value: "1-0-1" },
+    { text: "0-1-1", value: "0-1-1" },
+    { text: "1-1-1", value: "1-1-1" },
+  ];
+
   return (
     <View style={styles.medicationRow}>
-      <TextInput
+      <DropdownRegistration
         style={styles.inputLeft}
-        placeholder="Tab/Cap"
+        // label="Tab/Cap"
         value={medication.tabCap}
-        onChangeText={(text) => onMedicationChange(index, "tabCap", text)}
+        onChanged={(text) => onMedicationChange(index, "tabCap", text)}
+        options={tabCapOptions}
       />
-      {/* <TextInput
+      <TextInput
         style={styles.inputCenter}
         placeholder="Medication Name"
         value={medication.medicationName}
         onChangeText={(text) =>
           onMedicationChange(index, "medicationName", text)
         }
-      /> */}
-      <TextInput
+      />
+      <DropdownRegistration
         style={styles.inputRight}
-        placeholder="How Often"
+        // label="How Often"
         value={medication.howOften}
-        onChangeText={(text) => onMedicationChange(index, "howOften", text)}
+        onChanged={(text) => onMedicationChange(index, "howOften", text)}
+        options={frequencyOptions}
       />
       <Pressable onPress={() => onRemoveMedication(index)}>
-        <Text style={styles.removeButton}>-</Text>
+        <Text style={styles.removeButton}> - </Text>
       </Pressable>
     </View>
   );
@@ -44,27 +63,30 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginVertical: 6,
-    marginHorizontal: 12,
+    // marginHorizontal: 12,
   },
   inputLeft: {
-    width: "55%",
+    width: "20%",
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
+    // marginRight: 5,
     backgroundColor: GlobalStyles.colors.primary200,
   },
   inputRight: {
-    width: "40%",
+    width: "20%",
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
+
     backgroundColor: GlobalStyles.colors.primary200,
   },
   inputCenter: {
-    width: "55%",
+    width: "50%",
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
+    // marginRight: 5,
     backgroundColor: GlobalStyles.colors.primary200,
   },
 
@@ -72,6 +94,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "red",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    // textAlign: "center",
+    // borderWidth: 1,
   },
 });
 

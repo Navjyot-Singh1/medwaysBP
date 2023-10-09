@@ -16,7 +16,11 @@ import {
 import { BACKEND_URL } from "../constants/urlConstants";
 import axios from "axios";
 import Toast from "react-native-root-toast";
-import { toastConfigSuccess, toastConfigFailure } from "../constants/styles";
+import {
+  toastConfigSuccess,
+  toastConfigFailure,
+  GlobalStyles,
+} from "../constants/styles";
 import { setUserRedux, setUserType, setUserId } from "../reducers/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -30,6 +34,7 @@ const OTPConfirmationScreen = ({ route }) => {
   const { phoneNumber } = route.params;
   const recaptchaVerifier = React.useRef(null);
   const [otp, setOTP] = useState("");
+  const [verificationCompleted, setVerificationCompleted] = useState(false); // [1]
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,6 +101,7 @@ const OTPConfirmationScreen = ({ route }) => {
 
   const sendOTP = async (phoneNumber) => {
     try {
+      setErrorMessage("");
       const phoneNo = "+91" + phoneNumber;
       // Send OTP to the provided phone number
 
@@ -107,38 +113,42 @@ const OTPConfirmationScreen = ({ route }) => {
 
       setVerificationId(confirmation.verificationId);
     } catch (error) {
-      // console.error("Error sending OTP:", error);
+      console.error("Error sending OTP:", error);
       setErrorMessage("Error sending OTP. Please try again.");
     }
   };
 
   const verifyOTP = async () => {
     try {
+      if (otp.length !== 6) {
+        setErrorMessage("Please enter a valid OTP");
+        return;
+      }
+
+      setVerificationCompleted(true);
       const credential = PhoneAuthProvider.credential(verificationId, otp);
       const userCredential = await signInWithCredential(auth, credential);
       const user = userCredential.user;
 
-      // dispatch(setUserRedux(user));
-      dispatch(setUserId(user.uid));
-      dispatch(setUserType(type));
       setUser(user);
       AsyncStorage.setItem("user", JSON.stringify(user));
       AsyncStorage.setItem("userId", user.uid);
       AsyncStorage.setItem("user_type", type);
       AsyncStorage.setItem("phoneNumber", phoneNumber);
-
+      console.log("OTP verified");
       login();
-      // setIsLoading(true);
 
-      // setIsLoading(false);
       if (navType === "Login") {
-        forceRerender();
         navigation.navigate("LoggedInScreens");
       } else {
         navigation.navigate("LoggedInScreens");
       }
     } catch (error) {
-      setErrorMessage(`Error signing in with OTP: ${error}`);
+      if (error.code === "auth/invalid-verification-code") {
+        setErrorMessage("Please enter a valid OTP");
+      } else {
+        setErrorMessage("Error verifying OTP. Please try again.");
+      }
     }
   };
 
@@ -180,6 +190,7 @@ const OTPConfirmationScreen = ({ route }) => {
 
   const resendOTP = async () => {
     try {
+      setErrorMessage("");
       const phoneNo = "+91" + phoneNumber;
       // Send OTP to the provided phone number
       console.log("Sending OTP to " + phoneNo + "...");
@@ -205,30 +216,34 @@ const OTPConfirmationScreen = ({ route }) => {
             firebaseConfig={firebaseConfig}
             // attemptInvisibleVerification
           />
-          <Text style={styles.title}>Enter the OTP sent to {phoneNumber}</Text>
-          <TextInput
-            placeholder="Enter OTP"
-            value={otp}
-            onChangeText={(text) => setOTP(text)}
-            keyboardType="number-pad"
-            style={styles.input}
-          />
-          {errorMessage ? (
-            <Text style={{ color: "red", marginVertical: 8 }}>
-              {errorMessage}
+          <View>
+            <Text style={styles.title}>
+              Enter the OTP sent to {phoneNumber}
             </Text>
-          ) : null}
-          <View style={styles.buttonContainer}>
-            <Button
-              title="Confirm"
-              onPress={verifyOTP}
-              style={styles.buttons}
+            <TextInput
+              placeholder="Enter OTP"
+              value={otp}
+              onChangeText={(text) => setOTP(text)}
+              keyboardType="number-pad"
+              style={styles.input}
             />
-            <Button
-              title="Resend OTP"
-              onPress={resendOTP}
-              style={styles.buttons}
-            />
+            {errorMessage ? (
+              <Text style={{ color: "red", marginVertical: 8 }}>
+                {errorMessage}
+              </Text>
+            ) : null}
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Confirm"
+                onPress={verifyOTP}
+                style={styles.buttons}
+              />
+              <Button
+                title="Resend OTP"
+                onPress={resendOTP}
+                style={styles.buttons}
+              />
+            </View>
           </View>
         </>
       ) : (
@@ -274,6 +289,7 @@ const styles = StyleSheet.create({
   buttons: {
     width: "40%",
     margin: 10,
+    backgroundColor: GlobalStyles.colors.primary300,
   },
 });
 

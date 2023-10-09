@@ -21,7 +21,6 @@ export const AppContextProvider = ({ children }) => {
     });
 
     AsyncStorage.getItem("user").then((user) => {
-      console.log("user", user);
       if (user) {
         setIsLoggedIn(true);
       } else {

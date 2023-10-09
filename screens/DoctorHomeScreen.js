@@ -10,6 +10,7 @@ import {
   TouchableNativeFeedback,
   Platform,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import AddNewReadingModal from "../components/Functional/AddNewReadingModal";
 import { useNavigation } from "@react-navigation/native";
@@ -90,6 +91,10 @@ const DoctorHomeScreen = () => {
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [selectedReading, setSelectedReading] = useState();
   const [selectedPatient, setSelectedPatient] = useState();
+  const [loading, setLoading] = useState(false);
+
+  const ButtonComponent =
+    Platform.OS === "android" ? Pressable : TouchableOpacity;
 
   const sortArrayByTimestampDescending = (array) => {
     // Custom comparison function
@@ -192,13 +197,16 @@ const DoctorHomeScreen = () => {
     };
 
     const url = BACKEND_URL + "api/readings/patient";
-
+    setLoading(true);
     const response = await axios.post(url, requestBody);
 
     if (response.data.length === 0) {
       Alert.alert("No readings found");
+      setReadings([]);
+      setLoading(false);
     } else {
       setReadings(response.data);
+      setLoading(false);
     }
   };
 
@@ -259,6 +267,7 @@ const DoctorHomeScreen = () => {
         styles.patientItem,
         Platform.OS === "android" &&
           pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+        Platform.OS === "ios" && pressed && { opacity: 0.5 },
       ]}
       android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
       onPress={() => {
@@ -276,7 +285,7 @@ const DoctorHomeScreen = () => {
     <View style={styles.outerContainer}>
       {screen === 0 && (
         <View style={styles.container}>
-          <Text style={styles.title}>Search Patients</Text>
+          <Text style={styles.searchPatientsTitle}>Search Patients</Text>
           <TextInput
             style={styles.searchInput}
             placeholder="Search Patients by Name"
@@ -293,21 +302,24 @@ const DoctorHomeScreen = () => {
       {screen === 1 && (
         <View style={styles.container}>
           <View style={styles.buttonContainer}>
-            <Pressable
+            <ButtonComponent
               style={({ pressed }) => [
                 styles.button,
                 Platform.OS === "android" &&
                   pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+                Platform.OS === "ios" && pressed && { opacity: 0.5 },
+                Platform.OS === "ios" && { borderWidth: 1 },
               ]}
               onPress={() => setIsModalVisible(true)}
             >
               <Text style={styles.buttonText}>Add New BP Reading</Text>
-            </Pressable>
-            <Pressable
+            </ButtonComponent>
+            <ButtonComponent
               style={({ pressed }) => [
                 styles.button,
                 Platform.OS === "android" &&
                   pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+                Platform.OS === "ios" && pressed && { opacity: 0.5 },
               ]}
               onPress={() =>
                 navigation.navigate("LoggedInScreens", {
@@ -319,31 +331,33 @@ const DoctorHomeScreen = () => {
               }
             >
               <Text style={styles.buttonText}>View Graph</Text>
-            </Pressable>
+            </ButtonComponent>
           </View>
           <View style={styles.titleContainer}>
-            <Pressable
+            <ButtonComponent
               style={({ pressed }) => [
-                styles.button,
+                styles.backButton,
                 Platform.OS === "android" &&
                   pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+                Platform.OS === "ios" && pressed && { opacity: 0.5 },
               ]}
               onPress={() => setScreen(0)}
             >
               <Text style={styles.backButton}>
-                <Ionicons name="arrow-back" size={16} color="black" />
+                <Ionicons name="arrow-back" size={30} color="black" />
               </Text>
-            </Pressable>
+            </ButtonComponent>
             <Text style={styles.title}>BP Readings</Text>
           </View>
-          {/* <View style={styles.tableHeading}>
-            <Text style={styles.tableHeadingItem}>Date & Time</Text>
-            <Text style={styles.tableHeadingItem}>BP Reading</Text>
-            <Text style={styles.tableHeadingItem}>Actions Taken</Text>
-          </View> */}
-          {readings.length === 0 ? (
+          {loading ? (
+            <ActivityIndicator
+              size="large"
+              color={GlobalStyles.colors.primary300}
+              marginVertical={60}
+            />
+          ) : readings.length === 0 ? (
             <View style={styles.noReadings}>
-              <Text>No readings found</Text>
+              <Text style={{ fontSize: 18 }}>No readings found</Text>
             </View>
           ) : (
             <FlatList
@@ -369,7 +383,9 @@ const DoctorHomeScreen = () => {
 
           <AddNewReadingModal
             visible={isModalVisible}
-            onClose={() => setIsModalVisible(false)}
+            onClose={() => {
+              setIsModalVisible(false);
+            }}
             onSave={handleAddReading}
           />
           <AddNewReadingModal
@@ -397,20 +413,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
+    marginVertical: 16,
+    marginTop: 30,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 16,
     alignContent: "center",
     marginLeft: 16,
   },
   backButton: {
-    backgroundColor: GlobalStyles.colors.primary300,
-    fontWeight: "bold",
-    fontSize: 16,
+    // backgroundColor: GlobalStyles.colors.primary300,
     alignSelf: "flex-start",
+    borderRadius: 5,
+    alignItems: "center",
   },
   searchInput: {
     height: 40,
@@ -438,17 +454,17 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    marginBottom: 10,
+    // marginBottom: 5,
   },
   button: {
-    backgroundColor: GlobalStyles.colors.primary300,
+    // backgroundColor: GlobalStyles.colors.primary300,
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
     alignItems: "center",
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
   },
   readingItem: {
@@ -482,6 +498,19 @@ const styles = StyleSheet.create({
   },
   tableItem3: {
     flex: 8,
+  },
+  noReadings: {
+    flex: 1,
+    // justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  searchPatientsTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    alignContent: "center",
+    marginBottom: 16,
+    textAlign: "center",
   },
 });
 

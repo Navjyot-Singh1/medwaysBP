@@ -109,14 +109,28 @@ const BPGraphs = ({ readings }) => {
       {/* <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}> */}
       <View>
-        <Title>Details of Selected Reading:</Title>
+        <View style={styles.legendContainer}>
+          <View style={styles.legendItem}>
+            <View style={styles.legendColorBox1}></View>
+            <Text style={styles.legendText}>Systolic</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={styles.legendColorBox2}></View>
+            <Text style={styles.legendText}>Diastolic</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={styles.legendColorBox3}></View>
+            <Text style={styles.legendText}>Pulse</Text>
+          </View>
+        </View>
+        <Title>Selected Reading:</Title>
         {selectedReading ? (
           <View style={styles.selectedReadingContainer}>
             <Text style={styles.selectedReadingItem}>
-              Systolic: {selectedReading.systolicPressure}
+              Systolic BP: {selectedReading.systolicPressure}
             </Text>
             <Text style={styles.selectedReadingItem}>
-              Diastolic: {selectedReading.diastolicPressure}
+              Diastolic BP: {selectedReading.diastolicPressure}
             </Text>
             <Text style={styles.selectedReadingItem}>
               Symptoms: {selectedReading.symptoms}
@@ -154,11 +168,42 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10,
-    fontSize: 17,
+    fontSize: 18,
+    // fontWeight: "bold",
   },
   noReadingSelected: {
     fontSize: 20,
     textAlign: "center",
+  },
+  legendContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginVertical: 5,
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  legendColorBox1: {
+    width: 20,
+    height: 20,
+    backgroundColor: "rgb(255, 0, 0)",
+    marginRight: 5,
+  },
+  legendColorBox2: {
+    width: 20,
+    height: 20,
+    backgroundColor: "rgb(0, 0, 255)", // "blue
+    marginRight: 5,
+  },
+  legendColorBox3: {
+    width: 20,
+    height: 20,
+    backgroundColor: "rgb(0, 255, 0)", // "green
+    marginRight: 5,
+  },
+  legendText: {
+    fontSize: 16,
   },
 });
 

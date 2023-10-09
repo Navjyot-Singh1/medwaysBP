@@ -56,8 +56,10 @@ function HomeTabs({ route }) {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="home" size={size} color={color} />
             ),
+            tabBarShowLabel: false,
             headerShown: isLoggedIn ? false : true,
             title: "Medways BP Tracker",
+            headerTitleAlign: "center",
           }}
         />
         {isLoggedIn && (
@@ -69,6 +71,7 @@ function HomeTabs({ route }) {
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="person" size={size} color={color} />
               ),
+              tabBarShowLabel: false,
               headerRight: () => (
                 <Pressable
                   onPress={() => {
@@ -138,6 +141,7 @@ function LoggedInScreens({ route }) {
           options={{
             title: "Medways BP Tracker",
             headerBackVisible: false,
+            headerTitleAlign: "center",
           }}
         />
       ) : (
@@ -147,23 +151,33 @@ function LoggedInScreens({ route }) {
           options={{
             title: "Medways BP Tracker",
             headerBackVisible: false,
+            headerTitleAlign: "center",
           }}
         />
       )}
+      <Stack.Screen
+        name="HomeTabs"
+        component={HomeTabs}
+        options={{
+          headerShown: false,
+        }}
+      />
+
       <Stack.Screen
         name="ViewGraphsScreen"
         component={GraphsScreen}
         options={{
           title: "Graphical Trends",
+          headerBackVisible: true,
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="OTPConfirmationScreen"
         component={OTPConfirmationScreen}
         options={{
           title: "OTP Confirmation",
         }}
-      />
+      /> */}
     </Stack.Navigator>
   );
 }
