@@ -1,0 +1,40 @@
+runtime: nodejs
+env: flex
+
+# This sample incurs costs to run on the App Engine flexible environment.
+# The settings below are to reduce costs during testing and are not appropriate
+# for production use. For more information, see:
+# https://cloud.google.com/appengine/docs/flexible/nodejs/configuring-your-app-with-app-yaml
+manual_scaling:
+  instances: 1
+resources:
+  cpu: 1
+  memory_gb: 1
+  disk_size_gb: 10
+
+# [START env_variables]
+env_variables:
+  NODE_ENV: production
+  # [END env_variables]
+
+# [START health_check]
+health_check:
+  enable_health_check: False
+# [END health_check]
+
+# [START app]
+# Replace YOUR_APP_NAME with a unique name for your application.
+# This name will be used as the hostname for your application.
+# For example, if you set YOUR_APP_NAME to "my-app", your application will be
+# accessible at https://my-app.appspot.com.
+# Note that the hostname must be unique within the googleusercontent.com domain.
+# See https://cloud.google.com/appengine/docs/flexible/nodejs/how-requests-are-routed
+# for more information.
+
+# If your application does not receive any traffic for 30 minutes, App Engine
+# terminates the application to reduce costs. To avoid this, you can set the
+# `idle_timeout` to a higher value. The value should be less than 24 hours.
+# See https://cloud.google.com/appengine/docs/flexible/nodejs/configuring-your-app-with-app-yaml
+# for more information.
+# idle_timeout: 10m
+# [END app]

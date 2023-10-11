@@ -5,7 +5,7 @@ import {
   FirebaseRecaptchaVerifierModal,
   FirebaseRecaptchaBanner,
 } from "expo-firebase-recaptcha";
-import { app, firebaseConfig } from "../App";
+import { app, firebaseConfig } from "../config/firebase";
 import {
   getAuth,
   signInWithPhoneNumber,
@@ -13,27 +13,31 @@ import {
   PhoneAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
-import { BACKEND_URL } from "../constants/urlConstants";
+import { BACKEND_URL } from "@env";
 import axios from "axios";
 import Toast from "react-native-root-toast";
-import { toastConfigSuccess, toastConfigFailure } from "../constants/styles";
-import { setUser } from "../reducers/authSlice";
+import {
+  toastConfigSuccess,
+  toastConfigFailure,
+  GlobalStyles,
+} from "../constants/styles";
+import { setUserRedux, setUserType, setUserId } from "../reducers/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
+import { useAppContext } from "../context/AppContext";
 
 const OTPConfirmationScreen = ({ route }) => {
   const auth = getAuth(app);
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  // // auth.languageCode = 'it';
-  // // To apply the default browser preference instead of explicitly setting it.
-  // auth.useDeviceLanguage();
   const { phoneNumber } = route.params;
   const recaptchaVerifier = React.useRef(null);
   const [otp, setOTP] = useState("");
+  const [verificationCompleted, setVerificationCompleted] = useState(false); // [1]
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [verificationId, setVerificationId] = useState("");
   const [user, setUser] = useState(null);
   const [type, setType] = useState("");
@@ -45,10 +49,12 @@ const OTPConfirmationScreen = ({ route }) => {
     {}
   );
 
+  const { forceRerender, login, logout } = useAppContext();
+
   useEffect(() => {
     setLoading(true); // Set loading to true when OTP sending starts
     sendOTP(phoneNumber).then(() => setLoading(false)); // Set loading to false when OTP sending is done
-  }, [phoneNumber]);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -77,6 +83,7 @@ const OTPConfirmationScreen = ({ route }) => {
           howLongPatient: registrationDetails.howLongPatient.value,
           doctor: registrationDetails.doctor,
           medications: medications,
+          mobileNo: phoneNumber,
         });
       } else {
         const { registrationDetails, phoneNumber } = route.params;
@@ -92,56 +99,56 @@ const OTPConfirmationScreen = ({ route }) => {
     }
   }, []);
 
-  // const sendOTP = async (phoneNumber) => {
-  //   try {
-  //     const phoneNo = "+91" + phoneNumber;
-  //     // Send OTP to the provided phone number
-  //     console.log("Sending OTP to " + phoneNo + "...");
-  //     const confirmation = await signInWithPhoneNumber(
-  //       auth,
-  //       phoneNo,
-  //       recaptchaVerifier.current
-  //     );
-
-  //     setVerificationId(confirmation.verificationId);
-  //   } catch (error) {
-  //     console.error("Error sending OTP:", error);
-  //     setErrorMessage("Error sending OTP. Please try again.");
-  //   }
-  // };
-
   const sendOTP = async (phoneNumber) => {
-    console.log("Sending OTP to " + phoneNumber + "...");
-    console.log("OTP sent successfully");
+    try {
+      setErrorMessage("");
+      const phoneNo = "+91" + phoneNumber;
+      // Send OTP to the provided phone number
+
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        phoneNo,
+        recaptchaVerifier.current
+      );
+
+      setVerificationId(confirmation.verificationId);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      setErrorMessage("Error sending OTP. Please try again.");
+    }
   };
+
   const verifyOTP = async () => {
     try {
-      // const credential = PhoneAuthProvider.credential(verificationId, otp);
-      // const userCredential = await signInWithCredential(auth, credential);
-      // const user = userCredential.user;
-      const user = {
-        uid: "123456789",
-      };
-      // dispatch(setUser(user));
-      setUser(user);
+      if (otp.length !== 6) {
+        setErrorMessage("Please enter a valid OTP");
+        return;
+      }
 
+      setVerificationCompleted(true);
+      const credential = PhoneAuthProvider.credential(verificationId, otp);
+      const userCredential = await signInWithCredential(auth, credential);
+      const user = userCredential.user;
+
+      setUser(user);
       AsyncStorage.setItem("user", JSON.stringify(user));
       AsyncStorage.setItem("userId", user.uid);
-      AsyncStorage.setItem("type", type);
+      AsyncStorage.setItem("user_type", type);
+      AsyncStorage.setItem("phoneNumber", phoneNumber);
+      console.log("OTP verified");
+      login();
 
-      setTimeout(() => {
-        if (navType === "Login") {
-          navigation.navigate("Home");
-        } else {
-          if (type === "Patient") {
-            navigation.navigate("PatientHome");
-          } else {
-            navigation.navigate("DoctorHome");
-          }
-        }
-      }, 1000);
+      if (navType === "Login") {
+        navigation.navigate("LoggedInScreens");
+      } else {
+        navigation.navigate("LoggedInScreens");
+      }
     } catch (error) {
-      setErrorMessage(`Error signing in with OTP: ${error}`);
+      if (error.code === "auth/invalid-verification-code") {
+        setErrorMessage("Please enter a valid OTP");
+      } else {
+        setErrorMessage("Error verifying OTP. Please try again.");
+      }
     }
   };
 
@@ -152,12 +159,13 @@ const OTPConfirmationScreen = ({ route }) => {
       url = BACKEND_URL + "api/patients";
       reqBody = {
         ...patientRegistrationDetails,
+        PatientId: phoneNumber,
       };
     } else {
       url = BACKEND_URL + "api/doctors";
       reqBody = {
         ...doctorRegistrationDetails,
-        DoctorID: user.uid,
+        DoctorID: phoneNumber,
       };
     }
 
@@ -175,13 +183,14 @@ const OTPConfirmationScreen = ({ route }) => {
         );
       }
     } catch (error) {
-      console.error("An error occurred:", error);
-      Toast.show("Registration Failed. Please try again.", toastConfigFailure);
+      // console.error("An error occurred:", error);
+      // Toast.show("Registration Failed. Please try again.", toastConfigFailure);
     }
   };
 
   const resendOTP = async () => {
     try {
+      setErrorMessage("");
       const phoneNo = "+91" + phoneNumber;
       // Send OTP to the provided phone number
       console.log("Sending OTP to " + phoneNo + "...");
@@ -193,33 +202,63 @@ const OTPConfirmationScreen = ({ route }) => {
 
       setVerificationId(confirmation.verificationId);
     } catch (error) {
-      console.error("Error sending OTP:", error);
+      // console.error("Error sending OTP:", error);
       setErrorMessage("Error sending OTP. Please try again.");
     }
   };
 
   return (
     <View style={styles.container}>
-      <FirebaseRecaptchaVerifierModal
-        ref={recaptchaVerifier}
-        firebaseConfig={firebaseConfig}
-        // attemptInvisibleVerification
-      />
-      <Text style={styles.title}>Enter the OTP sent to {phoneNumber}</Text>
-      <TextInput
-        placeholder="Enter OTP"
-        value={otp}
-        onChangeText={(text) => setOTP(text)}
-        keyboardType="number-pad"
-        style={styles.input}
-      />
-      {errorMessage ? (
-        <Text style={{ color: "red" }}>{errorMessage}</Text>
-      ) : null}
-      <View style={styles.buttonContainer}>
-        <Button title="Confirm" onPress={verifyOTP} style={styles.buttons} />
-        <Button title="Resend OTP" onPress={resendOTP} style={styles.buttons} />
-      </View>
+      {!isLoading ? (
+        <>
+          <FirebaseRecaptchaVerifierModal
+            ref={recaptchaVerifier}
+            firebaseConfig={firebaseConfig}
+            // attemptInvisibleVerification
+          />
+          <View>
+            <Text style={styles.title}>
+              Enter the OTP sent to {phoneNumber}
+            </Text>
+            <TextInput
+              placeholder="Enter OTP"
+              value={otp}
+              onChangeText={(text) => setOTP(text)}
+              keyboardType="number-pad"
+              style={styles.input}
+            />
+            {errorMessage ? (
+              <Text style={{ color: "red", marginVertical: 8 }}>
+                {errorMessage}
+              </Text>
+            ) : null}
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Confirm"
+                onPress={verifyOTP}
+                style={styles.buttons}
+              />
+              <Button
+                title="Resend OTP"
+                onPress={resendOTP}
+                style={styles.buttons}
+              />
+            </View>
+          </View>
+        </>
+      ) : (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Image
+            source={require("../assets/Logo.png")}
+            style={{ width: 120, height: 100, marginVertical: 10 }}
+          />
+          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+            Medways BP Tracker
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -245,11 +284,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
   },
   buttons: {
     width: "40%",
     margin: 10,
+    backgroundColor: GlobalStyles.colors.primary300,
   },
 });
 

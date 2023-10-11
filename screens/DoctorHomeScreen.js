@@ -6,12 +6,23 @@ import {
   FlatList,
   StyleSheet,
   Pressable,
+  Alert,
+  TouchableNativeFeedback,
+  Platform,
+  TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import AddNewReadingModal from "../components/Functional/AddNewReadingModal";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../constants/styles";
 import Title from "../components/UI/Title";
 import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { BACKEND_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ReadingItem from "../components/UI/ReadingItem";
+
 // import { useSelector, useDispatch } from 'react-redux';
 // import { searchPatientsAction } from '../redux/actions/patientActions';
 
@@ -73,66 +84,169 @@ const DoctorHomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [screen, setScreen] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [readings, setReadings] = useState([
-    {
-      id: "1",
-      dateTime: "2021-05-01",
-      systolic: 120,
-      diastolic: 80,
-      actionsTaken: "Took medication",
-    },
-    {
-      id: "2",
-      dateTime: "2021-05-02",
-      systolic: 130,
-      diastolic: 90,
-      actionsTaken: "Took medication and exercised along with diet control",
-    },
-    {
-      id: "3",
-      dateTime: "2021-05-03",
-      systolic: 140,
-      diastolic: 100,
-      actionsTaken: "Took medication",
-    },
-    {
-      id: "4",
-      dateTime: "2021-05-04",
-      systolic: 150,
-      diastolic: 110,
-      actionsTaken: "Took medication",
-    },
-  ]);
-  const [patientList, setPatientList] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      phone: "1234567890",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      phone: "1234567890",
-    },
-    {
-      id: 3,
-      name: "John Smith",
-      phone: "1234567890",
-    },
-    {
-      id: 4,
-      name: "Jane Smith",
-      phone: "1234567890",
-    },
-  ]);
+  const [readings, setReadings] = useState([]);
+  const [patientList, setPatientList] = useState([]);
   const [filteredPatientList, setFilteredPatientList] = useState(patientList);
+  const [doctor, setDoctor] = useState({});
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [selectedReading, setSelectedReading] = useState();
+  const [selectedPatient, setSelectedPatient] = useState();
+  const [loading, setLoading] = useState(false);
 
-  const handleAddReading = async (newReading) => {};
+  const ButtonComponent =
+    Platform.OS === "android" ? Pressable : TouchableOpacity;
+
+  const sortArrayByTimestampDescending = (array) => {
+    // Custom comparison function
+    function compareTimestamps(a, b) {
+      // Split timestamp strings into parts
+      const partsA = a.timestamp.split(/[/, : ]+/);
+      const partsB = b.timestamp.split(/[/, : ]+/);
+
+      // Extract date and time components
+      const monthA = parseInt(partsA[0]);
+      const dayA = parseInt(partsA[1]);
+      const yearA = parseInt(partsA[2]);
+      const hourA = parseInt(partsA[3]);
+      const minuteA = parseInt(partsA[4]);
+      const secondA = parseInt(partsA[5]);
+
+      const monthB = parseInt(partsB[0]);
+      const dayB = parseInt(partsB[1]);
+      const yearB = parseInt(partsB[2]);
+      const hourB = parseInt(partsB[3]);
+      const minuteB = parseInt(partsB[4]);
+      const secondB = parseInt(partsB[5]);
+
+      // Create Date objects
+      const dateA = new Date(yearA, monthA - 1, dayA, hourA, minuteA, secondA);
+      const dateB = new Date(yearB, monthB - 1, dayB, hourB, minuteB, secondB);
+
+      // Compare in descending order
+      if (dateA > dateB) {
+        return -1;
+      } else if (dateA < dateB) {
+        return 1;
+      }
+      return 0;
+    }
+
+    // Sort the array using the custom comparison function
+    array.sort(compareTimestamps);
+
+    return array;
+  };
+
+  const handleReadingClick = (reading) => {
+    setSelectedReading(reading);
+    setTimeout(() => {
+      setIsUpdateModalVisible(true);
+    }, 200);
+  };
+
+  const handleAddReading = async (newReading) => {
+    const requestBody = {
+      actionsTaken: newReading.actionsTaken,
+      diastolicPressure: newReading.diastolic,
+      doctorId: newReading.doctorId,
+      patientId: newReading.patientId,
+      symptoms: newReading.symptoms,
+      pulse: newReading.pulse,
+      systolicPressure: newReading.systolic,
+      timestamp: newReading.dateTime,
+      patientId: selectedPatient.id,
+    };
+    const url = BACKEND_URL + "api/readings";
+    const response = await axios.post(url, requestBody);
+
+    if (response.status === 200) {
+      Alert.alert("Reading added successfully");
+    } else {
+      Alert.alert("Error in adding reading. Please try again!");
+    }
+    console.log("selectedPatient.id", selectedPatient.id);
+    fetchReadings(selectedPatient.id);
+  };
+
+  const handleUpdateReading = async (updatedReading) => {
+    const requestBody = {
+      actionsTaken: updatedReading.actionsTaken,
+      diastolicPressure: updatedReading.diastolic,
+      patientId: selectedPatient.id,
+      symptoms: updatedReading.symptoms,
+      systolicPressure: updatedReading.systolic,
+      pulse: updatedReading.pulse,
+      timestamp: updatedReading.dateTime,
+    };
+
+    const url = BACKEND_URL + "api/readings/" + selectedReading.id;
+    const response = await axios.put(url, requestBody);
+
+    if (response.status === 200) {
+      Alert.alert("Reading updated successfully");
+    } else {
+      Alert.alert("Error in updating reading. Please try again!");
+    }
+
+    fetchReadings(selectedPatient.id);
+  };
+
+  const fetchReadings = async (patientId) => {
+    const requestBody = {
+      patientId: patientId,
+    };
+
+    const url = BACKEND_URL + "api/readings/patient";
+    setLoading(true);
+    const response = await axios.post(url, requestBody);
+
+    if (response.data.length === 0) {
+      Alert.alert("No readings found");
+      setReadings([]);
+      setLoading(false);
+    } else {
+      setReadings(response.data);
+      setLoading(false);
+    }
+  };
+
+  const getAllPatients = async (doctorId) => {
+    //API is in the form of req.params.doctorId
+    axios
+      .get(`${BACKEND_URL}api/patients/doctors/${doctorId}`)
+      .then((response) => {
+        setPatientList(response.data);
+        setFilteredPatientList(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const getDoctorDetails = async () => {
+    AsyncStorage.getItem("phoneNumber").then((phoneNo) => {
+      console.log("backend url", BACKEND_URL);
+      //API is in the form of req.params.id
+      axios
+        .get(`${BACKEND_URL}api/doctors/${phoneNo}`)
+        .then((response) => {
+          setDoctor(response.data);
+          getAllPatients(response.data.id);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
+  };
 
   // const dispatch = useDispatch();
   const navigation = useNavigation();
   // Replace with your Redux selectors
   // const patientList = useSelector(state => state.patients.patientList);
+
+  useEffect(() => {
+    getDoctorDetails();
+  }, []);
 
   useEffect(() => {
     // Dispatch an action to search for patients when the component mounts or searchQuery changes
@@ -150,22 +264,29 @@ const DoctorHomeScreen = () => {
 
   const renderItem = ({ item }) => (
     <Pressable
-      style={[
+      style={({ pressed }) => [
         styles.patientItem,
-        ({ pressed }) => ({ backgroundColor: pressed ? "#e0e0e0" : "#f0f0f0" }),
+        Platform.OS === "android" &&
+          pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+        Platform.OS === "ios" && pressed && { opacity: 0.5 },
       ]}
-      onPress={() => setScreen(1)}
+      android_ripple={{ color: "rgba(0, 0, 0, 0.1)" }}
+      onPress={() => {
+        setScreen(1);
+        fetchReadings(item.id);
+        setSelectedPatient(item);
+      }}
     >
       <Text style={styles.patientName}>{item.name}</Text>
-      <Text style={styles.patientPhone}>{item.phone}</Text>
+      <Text style={styles.patientPhone}>{item.mobileNo}</Text>
     </Pressable>
   );
 
   return (
-    <>
+    <View style={styles.outerContainer}>
       {screen === 0 && (
         <View style={styles.container}>
-          <Text style={styles.title}>Search Patients</Text>
+          <Text style={styles.searchPatientsTitle}>Search Patients</Text>
           <TextInput
             style={styles.searchInput}
             placeholder="Search Patients by Name"
@@ -182,82 +303,131 @@ const DoctorHomeScreen = () => {
       {screen === 1 && (
         <View style={styles.container}>
           <View style={styles.buttonContainer}>
-            <Pressable
-              style={styles.button}
+            <ButtonComponent
+              style={({ pressed }) => [
+                styles.button,
+                Platform.OS === "android" &&
+                  pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+                Platform.OS === "ios" && pressed && { opacity: 0.5 },
+                Platform.OS === "ios" && { borderWidth: 1 },
+              ]}
               onPress={() => setIsModalVisible(true)}
             >
               <Text style={styles.buttonText}>Add New BP Reading</Text>
-            </Pressable>
-            <Pressable
-              style={styles.button}
+            </ButtonComponent>
+            <ButtonComponent
+              style={({ pressed }) => [
+                styles.button,
+                Platform.OS === "android" &&
+                  pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+                Platform.OS === "ios" && pressed && { opacity: 0.5 },
+              ]}
               onPress={() =>
-                navigation.navigate("ViewGraphsScreen", { readings })
+                navigation.navigate("LoggedInScreens", {
+                  screen: "ViewGraphsScreen",
+                  params: {
+                    readings: readings,
+                  },
+                })
               }
             >
-              <Text style={styles.buttonText}>View Graphical Trends</Text>
-            </Pressable>
+              <Text style={styles.buttonText}>View Graph</Text>
+            </ButtonComponent>
           </View>
           <View style={styles.titleContainer}>
-            <Pressable style={styles.button} onPress={() => setScreen(0)}>
+            <ButtonComponent
+              style={({ pressed }) => [
+                styles.backButton,
+                Platform.OS === "android" &&
+                  pressed && { backgroundColor: "rgba(0, 0, 0, 0.1)" },
+                Platform.OS === "ios" && pressed && { opacity: 0.5 },
+              ]}
+              onPress={() => setScreen(0)}
+            >
               <Text style={styles.backButton}>
-                <Ionicons name="arrow-back" size={16} color="black" />
+                <Ionicons name="arrow-back" size={30} color="black" />
               </Text>
-            </Pressable>
+            </ButtonComponent>
             <Text style={styles.title}>BP Readings</Text>
           </View>
-          <View style={styles.tableHeading}>
-            <Text style={styles.tableHeadingItem}>Date & Time</Text>
-            <Text style={styles.tableHeadingItem}>BP Reading</Text>
-            <Text style={styles.tableHeadingItem}>Actions Taken</Text>
-          </View>
-          <FlatList
-            data={readings}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View>
-                <View style={styles.readingItem}>
-                  <Text style={styles.tableItem1}> {item.dateTime}</Text>
-                  <Text style={styles.tableItem2}>
-                    {item.systolic}/{item.diastolic}
-                  </Text>
-                  <Text style={styles.tableItem3}>{item.actionsTaken}</Text>
-                </View>
-              </View>
-            )}
-          />
+          {loading ? (
+            <ActivityIndicator
+              size="large"
+              color={GlobalStyles.colors.primary300}
+              marginVertical={60}
+            />
+          ) : readings.length === 0 ? (
+            <View style={styles.noReadings}>
+              <Text style={{ fontSize: 18 }}>No readings found</Text>
+            </View>
+          ) : (
+            <FlatList
+              data={sortArrayByTimestampDescending(readings)}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                // <View>
+                //   <View style={styles.readingItem}>
+                //     <Text style={styles.tableItem1}> {item.dateTime}</Text>
+                //     <Text style={styles.tableItem2}>
+                //       {item.systolic}/{item.diastolic}
+                //     </Text>
+                //     <Text style={styles.tableItem3}>{item.actionsTaken}</Text>
+                //   </View>
+                // </View>
+                <ReadingItem
+                  reading={item}
+                  onReadingClick={handleReadingClick}
+                />
+              )}
+            />
+          )}
+
           <AddNewReadingModal
             visible={isModalVisible}
-            onClose={() => setIsModalVisible(false)}
+            onClose={() => {
+              setIsModalVisible(false);
+            }}
             onSave={handleAddReading}
+          />
+          <AddNewReadingModal
+            visible={isUpdateModalVisible}
+            onClose={() => setIsUpdateModalVisible(false)}
+            onSave={handleUpdateReading}
+            reading={selectedReading}
           />
         </View>
       )}
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    marginTop: 20,
+  },
   container: {
     flex: 1,
     padding: 16,
   },
   titleContainer: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
+    marginVertical: 16,
+    marginTop: 30,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 16,
-    alignSelf: "center",
+    alignContent: "center",
+    marginLeft: 16,
   },
   backButton: {
-    backgroundColor: GlobalStyles.colors.primary300,
-    fontWeight: "bold",
-    fontSize: 16,
+    // backgroundColor: GlobalStyles.colors.primary300,
     alignSelf: "flex-start",
+    borderRadius: 5,
+    alignItems: "center",
   },
   searchInput: {
     height: 40,
@@ -284,18 +454,18 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
+    justifyContent: "space-evenly",
+    // marginBottom: 5,
   },
   button: {
-    backgroundColor: GlobalStyles.colors.primary300,
+    // backgroundColor: GlobalStyles.colors.primary300,
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
     alignItems: "center",
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
   },
   readingItem: {
@@ -329,6 +499,19 @@ const styles = StyleSheet.create({
   },
   tableItem3: {
     flex: 8,
+  },
+  noReadings: {
+    flex: 1,
+    // justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  searchPatientsTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    alignContent: "center",
+    marginBottom: 16,
+    textAlign: "center",
   },
 });
 

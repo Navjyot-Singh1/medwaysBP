@@ -11,8 +11,11 @@ router.put("/doctors/:id", doctorController.updateDoctor);
 // Delete a doctor by ID
 router.delete("/doctors/:id", doctorController.deleteDoctor);
 
+// //Delete all doctors
+// router.delete("/doctors", doctorController.deleteAllDoctors);
+
 // Get a doctor by ID
-// router.get("/doctors/:id", doctorController.getById);
+router.get("/doctors/:id", doctorController.getById);
 
 // Get all doctors
 router.get("/doctors", doctorController.getAllDoctors);

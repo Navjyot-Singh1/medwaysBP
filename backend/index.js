@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const dotenv = require("dotenv");
 
 const admin = require("firebase-admin");
 const credentials = require("./key.json");
@@ -9,6 +10,7 @@ admin.initializeApp({
   credential: admin.credential.cert(credentials),
 });
 
+dotenv.config();
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));

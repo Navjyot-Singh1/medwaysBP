@@ -6,7 +6,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { RadioButton } from "react-native-paper";
 import PrimaryButton from "../UI/PrimaryButton";
@@ -16,8 +16,9 @@ import {
   toastConfigFailure,
   GlobalStyles,
 } from "../../constants/styles";
+import { Alert } from "react-native";
 
-import { BACKEND_URL } from "../../constants/urlConstants";
+import { BACKEND_URL } from "@env";
 import axios from "axios";
 
 import Input from "../UI/Input";
@@ -25,36 +26,43 @@ import Input from "../UI/Input";
 const SearchDoctor = ({ handleSelectedDoctor }) => {
   const [selection, setSelection] = useState("Name");
   const [searchQuery, setSearchQuery] = useState("");
+  const [allDoctorsList, setAllDoctorsList] = useState([]);
   const [doctorsList, setDoctorsList] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
+  useEffect(() => {
+    getAllDoctors();
+    console.log("allDoctors", allDoctorsList);
+  }, []);
+
   const handleSearch = async () => {
-    const url = BACKEND_URL + `api/doctors/search`;
-    console.log("url:", url);
-    const reqBody = {
-      query: searchQuery,
-      type: selection,
-    };
-
-    console.log("reqBody:", reqBody);
-
-    try {
-      const response = await axios.post(url, reqBody);
-
-      if (response.status === 200) {
-        // Toast.show("Doctor Found", toastConfigSuccess);
-
-        setDoctorsList(response.data);
-      } else {
-        Toast.show("Doctor Not Found Testing", toastConfigFailure);
+    if (selection === "Name") {
+      let filteredDoctors = allDoctorsList.filter((doctor) => {
+        return doctor.Name.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+      if (filteredDoctors.length === 0) {
+        Alert.alert("No doctors found with the given name");
       }
-    } catch (error) {
-      Toast.show(
-        "Error in fetching doctor data! Please try again",
-        toastConfigFailure
-      );
-      console.error("Error in fetching doctor data:", error);
+      setDoctorsList(filteredDoctors);
+    } else if (selection === "Mobile Number") {
+      let filteredDoctors = allDoctorsList.filter((doctor) => {
+        return doctor.MobileNo.toLowerCase().includes(
+          searchQuery.toLowerCase()
+        );
+      });
+      if (filteredDoctors.length === 0) {
+        Alert.alert("No doctors found with the given mobile number");
+      }
+      setDoctorsList(filteredDoctors);
     }
+  };
+
+  const getAllDoctors = async () => {
+    const url = `${BACKEND_URL}api/doctors`;
+    console.log("url:", url);
+    const response = await axios.get(url);
+
+    setAllDoctorsList(response.data);
   };
 
   return (

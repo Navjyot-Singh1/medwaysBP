@@ -1,7 +1,37 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { GlobalStyles } from "../../constants/styles";
 
-export default function PrimaryButton({ children, onPress, style }) {
+export default function PrimaryButton({
+  children,
+  onPress,
+  style,
+  backgroundColor,
+  fontSize,
+}) {
+  const styles = StyleSheet.create({
+    buttonInnerContainer: {
+      backgroundColor: backgroundColor
+        ? backgroundColor
+        : GlobalStyles.colors.primary500,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      elevation: 2,
+    },
+    buttonText: {
+      color: "white",
+      textAlign: "center",
+      fontSize: fontSize ? fontSize : 16,
+      fontWeight: "bold",
+    },
+    buttonOuterContainer: {
+      borderRadius: 8,
+      margin: 4,
+      overflow: "hidden",
+    },
+    pressed: {
+      opacity: 0.75,
+    },
+  });
   return (
     <View style={[styles.buttonOuterContainer, style]}>
       <Pressable
@@ -21,24 +51,3 @@ export default function PrimaryButton({ children, onPress, style }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  buttonInnerContainer: {
-    backgroundColor: GlobalStyles.colors.primary500,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    elevation: 2,
-  },
-  buttonText: {
-    color: "white",
-    textAlign: "center",
-  },
-  buttonOuterContainer: {
-    borderRadius: 8,
-    margin: 4,
-    overflow: "hidden",
-  },
-  pressed: {
-    opacity: 0.75,
-  },
-});

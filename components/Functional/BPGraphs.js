@@ -21,11 +21,19 @@ const BPGraphs = ({ readings }) => {
     setModalVisible(false);
   };
 
-  const systolicData = readings.map((reading) => reading.systolic);
-  const diastolicData = readings.map((reading) => reading.diastolic);
+  const systolicData = readings.map((reading) => reading.systolicPressure);
+  const diastolicData = readings.map((reading) => reading.diastolicPressure);
+  const pulseData = readings.map((reading) => reading.pulse);
 
   const chartData = {
-    labels: readings.map((reading) => reading.dateTime), // Assuming timestamp is a string
+    labels: readings.map((reading) =>
+      //Split the timestamp string to get only the date part and then split the date part with the delimiter '/' to get the month and day and then join them with the delimiter '-' to get the date in the format 'MM-DD'
+      {
+        let date = reading.timestamp.split(",")[0];
+        let dateParts = date.split("/");
+        return dateParts[1] + "-" + dateParts[0];
+      }
+    ),
     datasets: [
       {
         data: systolicData,
@@ -35,6 +43,11 @@ const BPGraphs = ({ readings }) => {
       {
         data: diastolicData,
         color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
+        strokeWidth: 2,
+      },
+      {
+        data: pulseData,
+        color: (opacity = 1) => `rgba(0, 255, 0, ${opacity})`,
         strokeWidth: 2,
       },
     ],
@@ -59,7 +72,7 @@ const BPGraphs = ({ readings }) => {
   };
 
   const chartConfig = {
-    backgroundGradientFrom: "#1E2923",
+    backgroundGradientFrom: "#08130D",
     backgroundGradientFromOpacity: 0,
     backgroundGradientTo: "#08130D",
     backgroundGradientToOpacity: 0.5,
@@ -79,36 +92,56 @@ const BPGraphs = ({ readings }) => {
         yAxisLabel="Pressure"
         yAxisSuffix="mmHg"
       /> */}
+
       <LineChart
         data={chartData}
         width={screenWidth}
         height={400}
         chartConfig={chartConfig}
         bezier
-        yAxisLabel="Pressure"
-        yAxisSuffix="mmHg"
+        // yAxisLabel="Pressure"
+        // yAxisSuffix="mmHg"
         onDataPointClick={handleDataPointClick}
+        style={{
+          marginHorizontal: 2,
+        }}
       />
       {/* <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}> */}
       <View>
-        <Title>Details of Selected Reading:</Title>
+        <View style={styles.legendContainer}>
+          <View style={styles.legendItem}>
+            <View style={styles.legendColorBox1}></View>
+            <Text style={styles.legendText}>Systolic</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={styles.legendColorBox2}></View>
+            <Text style={styles.legendText}>Diastolic</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={styles.legendColorBox3}></View>
+            <Text style={styles.legendText}>Pulse</Text>
+          </View>
+        </View>
+        <Title>Selected Reading:</Title>
         {selectedReading ? (
           <View style={styles.selectedReadingContainer}>
             <Text style={styles.selectedReadingItem}>
-              Systolic: {selectedReading.systolic}
+              Systolic BP: {selectedReading.systolicPressure}
             </Text>
             <Text style={styles.selectedReadingItem}>
-              Diastolic: {selectedReading.diastolic}
+              Diastolic BP: {selectedReading.diastolicPressure}
             </Text>
             <Text style={styles.selectedReadingItem}>
               Symptoms: {selectedReading.symptoms}
             </Text>
             {/* Add pulse here */}
             <Text style={styles.selectedReadingItem}>
+              Pulse: {selectedReading.pulse}
+            </Text>
+            <Text style={styles.selectedReadingItem}>
               Actions Taken: {selectedReading.actionsTaken}
             </Text>
-            {/* Add other details here */}
           </View>
         ) : (
           <Text style={styles.noReadingSelected}>No reading selected</Text>
@@ -123,6 +156,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    // marginHorizontal: 5,
   },
   selectedReadingContainer: {
     backgroundColor: "white",
@@ -134,12 +168,42 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 10,
-    fontSize: 17,
+    fontSize: 18,
+    // fontWeight: "bold",
   },
   noReadingSelected: {
     fontSize: 20,
-
     textAlign: "center",
+  },
+  legendContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginVertical: 5,
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  legendColorBox1: {
+    width: 20,
+    height: 20,
+    backgroundColor: "rgb(255, 0, 0)",
+    marginRight: 5,
+  },
+  legendColorBox2: {
+    width: 20,
+    height: 20,
+    backgroundColor: "rgb(0, 0, 255)", // "blue
+    marginRight: 5,
+  },
+  legendColorBox3: {
+    width: 20,
+    height: 20,
+    backgroundColor: "rgb(0, 255, 0)", // "green
+    marginRight: 5,
+  },
+  legendText: {
+    fontSize: 16,
   },
 });
 

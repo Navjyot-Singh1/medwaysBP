@@ -1,23 +1,73 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, Modal, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Modal,
+  StyleSheet,
+  KeyboardAvoidingView,
+} from "react-native";
 
 import Input from "../UI/Input";
 import Title from "../UI/Title";
 import PrimaryButton from "../UI/PrimaryButton";
 import { GlobalStyles } from "../../constants/styles";
+import Dropdown from "../UI/Dropdown";
+import MyDropdownPicker from "../UI/MyDropdownPicker";
 
-const AddNewReadingModal = ({ visible, onClose, onSave }) => {
-  const [systolic, setSystolic] = useState("");
-  const [diastolic, setDiastolic] = useState("");
-  const [symptoms, setSymptoms] = useState("");
-  const [actionsTaken, setActionsTaken] = useState("");
+const AddNewReadingModal = ({ visible, onClose, onSave, reading }) => {
+  const [systolic, setSystolic] = useState(
+    reading ? reading.systolicPressure : ""
+  );
+  const [diastolic, setDiastolic] = useState(
+    reading ? reading.diastolicPressure : ""
+  );
+  const [symptoms, setSymptoms] = useState(reading ? reading.symptoms : "");
+  const [actionsTaken, setActionsTaken] = useState(
+    reading ? reading.actionsTaken : ""
+  );
+  const [pulse, setPulse] = useState(reading ? reading.pulse : "");
+
+  // const symptomsOptions = [
+  //   { text: "None", value: "None" },
+  //   { text: "Headache", value: "Headache" },
+  //   { text: "Dizziness", value: "Dizziness" },
+  //   { text: "Blurred Vision", value: "Blurred Vision" },
+  //   { text: "Nausea", value: "Nausea" },
+  //   { text: "Vomiting", value: "Vomiting" },
+  //   { text: "Chest Pain", value: "Chest Pain" },
+  //   { text: "Shortness of Breath", value: "Shortness of Breath" },
+  // ];
+  const symptomsOptions = [
+    { label: "No Symptoms", value: "No Symptoms" },
+    { label: "Headache", value: "Headache" },
+    { label: "Dizziness", value: "Dizziness" },
+    { label: "Blurred Vision", value: "Blurred Vision" },
+    { label: "Nausea", value: "Nausea" },
+    { label: "Vomiting", value: "Vomiting" },
+    { label: "Chest Pain", value: "Chest Pain" },
+    { label: "Shortness of Breath", value: "Shortness of Breath" },
+  ];
+
+  const actionsOptions = [
+    { label: "No Action", value: "No Action" },
+    { label: "Took extra dose", value: "Took extra dose" },
+    { label: "Stopped BP Drug", value: "Stopped BP Drug" },
+    { label: "Visited Doctor/Hospital", value: "Visited Doctor/Hospital" },
+  ];
 
   const handleSave = () => {
+    if (!systolic || !diastolic || !symptoms || !actionsTaken || !pulse) {
+      alert("Please fill all the mandatory fields");
+      return;
+    }
     const newReading = {
       id: Math.random().toString(),
       systolic,
       diastolic,
       symptoms,
+      pulse,
       actionsTaken,
       dateTime: new Date().toLocaleString(),
     };
@@ -25,10 +75,23 @@ const AddNewReadingModal = ({ visible, onClose, onSave }) => {
     onClose();
   };
 
+  useEffect(() => {
+    if (reading) {
+      setSystolic(reading.systolicPressure);
+      setDiastolic(reading.diastolicPressure);
+      setSymptoms(reading.symptoms);
+      setActionsTaken(reading.actionsTaken);
+      setPulse(reading.pulse);
+    }
+  }, [reading]);
+
   return (
     <Modal visible={visible} animationType="slide">
-      <View style={styles.container}>
-        <Title>Add New BP Reading</Title>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <Title>{reading ? "Update BP Reading" : "Add New BP Reading"}</Title>
         <View style={styles.inputsRow}>
           <Input
             label="Systolic BP"
@@ -41,7 +104,7 @@ const AddNewReadingModal = ({ visible, onClose, onSave }) => {
             mandatory
           />
           <Input
-            label="Diastolic"
+            label="Diastolic BP"
             textInputConfig={{
               onChangeText: (text) => setDiastolic(text),
 
@@ -51,36 +114,93 @@ const AddNewReadingModal = ({ visible, onClose, onSave }) => {
             style={styles.rowInput}
             mandatory
           />
-        </View>
-        <Input
-          label="Symptoms"
-          textInputConfig={{
-            onChangeText: (text) => setSymptoms(text),
-            placeholder: "Enter your symptoms (if any) at the time of reading",
-            multiline: true,
-          }}
-          value={symptoms}
-        />
-        <Input
-          label="Actions Taken"
-          textInputConfig={{
-            onChangeText: (text) => setActionsTaken(text),
-            placeholder:
-              "Enter any actions taken (if any) at the time of reading",
-            multiline: true,
-          }}
-          value={actionsTaken}
-        />
-
-        <View style={styles.buttonsContainer}>
-          <Button title="Save" onPress={handleSave} style={styles.buttonSave} />
-          <Button
-            title="Cancel"
-            onPress={onClose}
-            style={styles.buttonCancel}
+          <Input
+            label="Pulse"
+            textInputConfig={{
+              onChangeText: (text) => setPulse(text),
+              keyboardType: "numeric",
+            }}
+            value={pulse}
+            style={styles.rowInput}
+            mandatory
           />
         </View>
-      </View>
+        <View style={styles.inputsRow}>
+          {/* <Dropdown
+            label="Symptoms"
+            onChanged={setSymptoms}
+            options={symptomsOptions}
+            value={symptoms}
+            style={styles.rowInput}
+          /> */}
+          <MyDropdownPicker
+            label="Symptoms"
+            onChanged={setSymptoms}
+            options={symptomsOptions}
+            value={symptoms}
+            style={styles.rowInput}
+            placeholder="Select Symptoms"
+            zIndex={3000}
+            zIndexInverse={1000}
+            mandatory
+          />
+        </View>
+        <View style={styles.inputsRow}>
+          {/* <Dropdown
+            label="Actions Taken"
+            onChanged={setActionsTaken}
+            options={actionsOptions}
+            value={actionsTaken}
+            style={styles.rowInput}
+          /> */}
+          <MyDropdownPicker
+            label="Actions Taken"
+            onChanged={setActionsTaken}
+            options={actionsOptions}
+            value={actionsTaken}
+            style={styles.rowInput}
+            placeholder="Select Actions Taken"
+            zIndex={2000}
+            zIndexInverse={2000}
+            mandatory
+          />
+        </View>
+
+        <View style={styles.buttonsContainer}>
+          <PrimaryButton
+            // title="Save"
+            onPress={() => {
+              handleSave();
+              setSystolic("");
+              setDiastolic("");
+              setSymptoms("");
+              setActionsTaken("");
+              setPulse("");
+            }}
+            // style={styles.buttonSave}
+            backgroundColor={GlobalStyles.colors.primary500}
+            fontSize={20}
+          >
+            Save
+          </PrimaryButton>
+
+          <PrimaryButton
+            onPress={() => {
+              setSystolic("");
+              setDiastolic("");
+              setSymptoms("");
+              setActionsTaken("");
+              setPulse("");
+              onClose();
+            }}
+            backgroundColor={GlobalStyles.colors.error500}
+            fontSize={20}
+          >
+            {" "}
+            Cancel{" "}
+          </PrimaryButton>
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -96,26 +216,38 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  inputRowPulse: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    width: "100%",
+  },
   rowInput: {
     flex: 1,
   },
   buttonsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
+    justifyContent: "space-evenly",
+    width: "100%",
     marginTop: 20,
   },
   buttonSave: {
-    backgroundColor: GlobalStyles.colors.primary700,
+    backgroundColor: GlobalStyles.colors.primary500,
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
+    fontSize: 20,
   },
   buttonCancel: {
     backgroundColor: GlobalStyles.colors.error500,
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
+    fontSize: 20,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 20,
   },
 });
 

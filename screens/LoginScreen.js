@@ -5,25 +5,53 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { GlobalStyles } from "../constants/styles";
+import axios from "axios";
+import { BACKEND_URL } from "@env";
 
 const LoginScreen = ({ route }) => {
   const [mobileNumber, setMobileNumber] = useState("");
+  const [userNotFound, setUserNotFound] = useState(false);
   const navigation = useNavigation();
   const { type } = route.params;
 
   const handleProceed = () => {
-    navigation.navigate("OTPConfirmationScreen", {
-      phoneNumber: mobileNumber,
-      type: type,
-      navType: "Login",
-    });
+    if (mobileNumber.length !== 10 || isNaN(mobileNumber)) {
+      alert("Please enter a valid mobile number.");
+      return;
+    }
+
+    checkIfUserExists();
+  };
+
+  const checkIfUserExists = () => {
+    const url = `${BACKEND_URL}api/${type.toLowerCase()}s/${mobileNumber}`;
+
+    axios
+      .get(url)
+      .then((res) => {
+        console.log(res.data);
+        if (res.status === 404) {
+          Alert.alert("User does not exist. Please register first.");
+        } else {
+          navigation.navigate("OTPConfirmationScreen", {
+            phoneNumber: mobileNumber,
+            type: type,
+            navType: "Login",
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setUserNotFound(true);
+      });
   };
 
   return (
     <View style={styles.container}>
-      {/* Big Title */}
       <Text style={styles.title}>Login</Text>
 
       {/* Input for Mobile Number */}
@@ -34,8 +62,15 @@ const LoginScreen = ({ route }) => {
         onChangeText={(text) => setMobileNumber(text)}
         keyboardType="phone-pad"
       />
+      {/*User not found*/}
+      {userNotFound && (
+        <Text style={styles.errorMessage}>
+          User not found. Please register first.
+        </Text>
+      )}
 
       {/* Proceed Button */}
+
       <TouchableOpacity style={styles.button} onPress={handleProceed}>
         <Text style={styles.buttonText}>Proceed</Text>
       </TouchableOpacity>
@@ -57,27 +92,35 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input: {
-    width: "100%",
+    width: "80%",
     height: 50,
     borderColor: "gray",
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
     marginBottom: 20,
-    fontSize: 16,
+    fontSize: 20,
+    textAlign: "center",
   },
   button: {
-    width: "100%",
+    width: "50%",
     height: 60,
-    backgroundColor: "blue", // Customize the button's background color
+    backgroundColor: GlobalStyles.colors.primary500,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },
   buttonText: {
-    color: "white", // Customize the button text color
+    color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  errorMessage: {
+    color: "red",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
   },
 });
 

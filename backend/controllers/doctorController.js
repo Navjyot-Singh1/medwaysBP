@@ -11,7 +11,7 @@ module.exports = {
       const doctorSnapshot = await doctorRef.get();
 
       if (!doctorSnapshot.exists) {
-        return res.status(404).json({ error: "Doctor not found Testing" });
+        return res.status(404).json({ error: "Doctor not found"});
       }
 
       const doctorData = doctorSnapshot.data();
@@ -103,21 +103,19 @@ module.exports = {
         DoctorID,
       };
 
-      console.log("newDoctorData", newDoctorData);
-
-      const randomId = uuidv4();
+      // const randomId = uuidv4();
 
       const newDoctorRef = await db
         .collection("doctors")
-        .doc(randomId)
+        .doc(DoctorID)
         .set({
           ...newDoctorData,
         });
-      const newDoctor = { id: randomId, ...newDoctorData };
+      const newDoctor = { id: DoctorID, ...newDoctorData };
 
-      const userRef = db.collection("users").doc(randomId);
+      const userRef = db.collection("users").doc(DoctorID);
       await userRef.set({
-        doctorId: randomId,
+        doctorId: DoctorID,
         email: Email,
         name: Name,
         type: "doctor",
@@ -177,6 +175,31 @@ module.exports = {
     } catch (error) {
       console.error("Error deleting doctor:", error);
       res.status(500).json({ error: "Error deleting doctor" });
+    }
+  },
+
+  deleteAllDoctors: async (req, res) => {
+    try {
+      const doctorsSnapshot = await db.collection("doctors").get();
+      const deletedDoctors = [];
+
+      doctorsSnapshot.forEach(async (doc) => {
+        const doctorRef = db.collection("doctors").doc(doc.id);
+        const deletedDoctorSnapshot = await doctorRef.get();
+        const deletedDoctor = {
+          id: doctorRef.id,
+          ...deletedDoctorSnapshot.data(),
+        };
+
+        await doctorRef.delete();
+
+        deletedDoctors.push(deletedDoctor);
+      });
+
+      res.json(deletedDoctors);
+    } catch (error) {
+      console.error("Error deleting doctors:", error);
+      res.status(500).json({ error: "Error deleting doctors" });
     }
   },
 };
