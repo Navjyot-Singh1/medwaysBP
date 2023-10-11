@@ -19,7 +19,7 @@ import Title from "../components/UI/Title";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { BACKEND_URL } from "../constants/urlConstants";
+import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ReadingItem from "../components/UI/ReadingItem";
 
@@ -225,6 +225,7 @@ const DoctorHomeScreen = () => {
 
   const getDoctorDetails = async () => {
     AsyncStorage.getItem("phoneNumber").then((phoneNo) => {
+      console.log("backend url", BACKEND_URL);
       //API is in the form of req.params.id
       axios
         .get(`${BACKEND_URL}api/doctors/${phoneNo}`)

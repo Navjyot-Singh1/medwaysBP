@@ -13,7 +13,7 @@ import {
   PhoneAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
-import { BACKEND_URL } from "../constants/urlConstants";
+import { BACKEND_URL } from "@env";
 import axios from "axios";
 import Toast from "react-native-root-toast";
 import {

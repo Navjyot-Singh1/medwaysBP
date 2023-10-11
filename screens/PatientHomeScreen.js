@@ -16,7 +16,7 @@ import Title from "../components/UI/Title";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import axios from "axios";
-import { BACKEND_URL } from "../constants/urlConstants";
+import { BACKEND_URL } from "@env";
 import ReadingItem from "../components/UI/ReadingItem";
 
 export default PatientHomeScreen = () => {

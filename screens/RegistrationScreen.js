@@ -17,7 +17,7 @@ import Dropdown from "../components/UI/Dropdown";
 import SearchDoctor from "../components/Functional/SearchDoctor";
 import PrimaryButton from "../components/UI/PrimaryButton";
 import TermsAndConditionsCheckbox from "../components/Functional/TermsAndConditions";
-import { BACKEND_URL } from "../constants/urlConstants";
+import { BACKEND_URL } from "@env";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../constants/styles";

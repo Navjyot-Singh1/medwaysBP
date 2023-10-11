@@ -10,7 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../constants/styles";
 import axios from "axios";
-import { BACKEND_URL } from "../constants/urlConstants";
+import { BACKEND_URL } from "@env";
 
 const LoginScreen = ({ route }) => {
   const [mobileNumber, setMobileNumber] = useState("");

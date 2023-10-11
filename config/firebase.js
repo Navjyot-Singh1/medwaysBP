@@ -1,13 +1,22 @@
 import { initializeApp } from "firebase/app";
+import {
+  FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_APP_ID,
+  FIREBASE_MEASUREMENT_ID,
+} from "@env";
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyBa1D7bIRM78hzLdO6ysRioTF96RHfiRqM",
-  authDomain: "medways-bp-tracker-4c1fe.firebaseapp.com",
-  projectId: "medways-bp-tracker-4c1fe",
-  storageBucket: "medways-bp-tracker-4c1fe.appspot.com",
-  messagingSenderId: "555071872161",
-  appId: "1:555071872161:web:eea9076dd25cea2570e4e0",
-  measurementId: "G-6QVV4DNDYJ",
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID,
+  measurementId: FIREBASE_MEASUREMENT_ID,
 };
 
 export const app = initializeApp(firebaseConfig);

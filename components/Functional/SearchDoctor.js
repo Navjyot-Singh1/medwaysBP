@@ -18,7 +18,7 @@ import {
 } from "../../constants/styles";
 import { Alert } from "react-native";
 
-import { BACKEND_URL } from "../../constants/urlConstants";
+import { BACKEND_URL } from "@env";
 import axios from "axios";
 
 import Input from "../UI/Input";
