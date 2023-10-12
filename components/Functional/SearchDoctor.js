@@ -32,7 +32,6 @@ const SearchDoctor = ({ handleSelectedDoctor }) => {
 
   useEffect(() => {
     getAllDoctors();
-    console.log("allDoctors", allDoctorsList);
   }, []);
 
   const handleSearch = async () => {
@@ -59,7 +58,7 @@ const SearchDoctor = ({ handleSelectedDoctor }) => {
 
   const getAllDoctors = async () => {
     const url = `${BACKEND_URL}api/doctors`;
-    console.log("url:", url);
+
     const response = await axios.get(url);
 
     setAllDoctorsList(response.data);

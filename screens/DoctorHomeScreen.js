@@ -164,7 +164,7 @@ const DoctorHomeScreen = () => {
     } else {
       Alert.alert("Error in adding reading. Please try again!");
     }
-    console.log("selectedPatient.id", selectedPatient.id);
+
     fetchReadings(selectedPatient.id);
   };
 
@@ -224,8 +224,8 @@ const DoctorHomeScreen = () => {
   };
 
   const getDoctorDetails = async () => {
+    console.log("BACKEND_URL", BACKEND_URL);
     AsyncStorage.getItem("phoneNumber").then((phoneNo) => {
-      console.log("backend url", BACKEND_URL);
       //API is in the form of req.params.id
       axios
         .get(`${BACKEND_URL}api/doctors/${phoneNo}`)

@@ -135,7 +135,7 @@ const OTPConfirmationScreen = ({ route }) => {
       AsyncStorage.setItem("userId", user.uid);
       AsyncStorage.setItem("user_type", type);
       AsyncStorage.setItem("phoneNumber", phoneNumber);
-      console.log("OTP verified");
+     
       login();
 
       if (navType === "Login") {
@@ -193,7 +193,7 @@ const OTPConfirmationScreen = ({ route }) => {
       setErrorMessage("");
       const phoneNo = "+91" + phoneNumber;
       // Send OTP to the provided phone number
-      console.log("Sending OTP to " + phoneNo + "...");
+     
       const confirmation = await signInWithPhoneNumber(
         auth,
         phoneNo,

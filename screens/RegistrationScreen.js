@@ -136,7 +136,6 @@ export default function RegistrationScreen({ route }) {
     axios
       .post(url, requestBody)
       .then((response) => {
-        console.log(response.data);
         if (response.data.exists) {
           Alert.alert(
             "This mobile number is already registered. Please login instead."
