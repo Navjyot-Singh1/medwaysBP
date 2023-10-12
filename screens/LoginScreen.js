@@ -33,7 +33,7 @@ const LoginScreen = ({ route }) => {
     axios
       .get(url)
       .then((res) => {
-        console.log(res.data);
+       
         if (res.status === 404) {
           Alert.alert("User does not exist. Please register first.");
         } else {

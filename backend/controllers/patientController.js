@@ -17,7 +17,7 @@ module.exports = {
         PatientId,
         mobileNo,
       } = req.body;
-      console.log("req.body:", req.body);
+
       const newPatientData = {
         age,
         name,
@@ -176,9 +176,7 @@ module.exports = {
 
   getPatientsByDoctorId: async (req, res) => {
     try {
-      console.log("req.params", req.params);
       const doctorId = req.params.doctorId;
-      console.log("doctorId", doctorId);
 
       const patientsSnapshot = await db
         .collection("patients")

@@ -125,7 +125,7 @@ export default PatientHomeScreen = () => {
   };
 
   const handleReadingClick = (reading) => {
-    console.log("Reading clicked", reading);
+   
     setSelectedReading(reading);
     setTimeout(() => {
       setIsUpdateModalVisible(true);
@@ -157,7 +157,7 @@ export default PatientHomeScreen = () => {
   };
 
   const handleUpdateReading = async (updatedReading) => {
-    console.log("updatedReading", updatedReading);
+   
 
     const requestBody = {
       actionsTaken: updatedReading.actionsTaken,
