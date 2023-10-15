@@ -234,8 +234,7 @@ export default function App() {
   const [phoneNumber, setPhoneNumber] = useState(null);
   // const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const { login, logout, isLoggedIn } = useAppContext();
+  const { isLoggedIn } = useAppContext();
 
   useEffect(() => {
     AsyncStorage.getItem("user").then((user) => {
