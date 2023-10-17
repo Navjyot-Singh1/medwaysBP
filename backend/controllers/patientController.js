@@ -1,6 +1,5 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
-const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
   createPatient: async (req, res) => {
@@ -30,8 +29,6 @@ module.exports = {
         PatientId,
         mobileNo,
       };
-
-      // const randomId = uuidv4();
 
       const newPatientRef = await db
         .collection("patients")

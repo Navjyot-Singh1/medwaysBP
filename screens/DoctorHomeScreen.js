@@ -15,16 +15,11 @@ import {
 import AddNewReadingModal from "../components/Functional/AddNewReadingModal";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../constants/styles";
-import Title from "../components/UI/Title";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ReadingItem from "../components/UI/ReadingItem";
-
-// import { useSelector, useDispatch } from 'react-redux';
-// import { searchPatientsAction } from '../redux/actions/patientActions';
 
 const patientList = [
   {

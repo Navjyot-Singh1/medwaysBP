@@ -1,6 +1,5 @@
 const admin = require("firebase-admin");
 const db = admin.firestore();
-const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
   getById: async (req, res) => {
@@ -11,7 +10,7 @@ module.exports = {
       const doctorSnapshot = await doctorRef.get();
 
       if (!doctorSnapshot.exists) {
-        return res.status(404).json({ error: "Doctor not found"});
+        return res.status(404).json({ error: "Doctor not found" });
       }
 
       const doctorData = doctorSnapshot.data();
@@ -102,8 +101,6 @@ module.exports = {
         Qualifications,
         DoctorID,
       };
-
-      // const randomId = uuidv4();
 
       const newDoctorRef = await db
         .collection("doctors")

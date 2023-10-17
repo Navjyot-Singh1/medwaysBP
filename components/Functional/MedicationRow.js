@@ -1,9 +1,17 @@
 import React from "react";
-import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
+import {
+  View,
+  TextInput,
+  Pressable,
+  Text,
+  StyleSheet,
+  Platform,
+} from "react-native";
 
 import { GlobalStyles } from "../../constants/styles";
 import Dropdown from "../UI/Dropdown";
 import DropdownRegistration from "../UI/DropdownRegistration";
+import MyDropdownPicker from "../UI/MyDropdownPicker";
 
 const MedicationRow = ({
   medication,
@@ -28,13 +36,31 @@ const MedicationRow = ({
 
   return (
     <View style={styles.medicationRow}>
+      {/* {Platform.OS === "ios" ? (
+        <DropdownRegistration
+          style={styles.inputLeft}
+          value={medication.tabCap}
+          onChanged={(text) => onMedicationChange(index, "tabCap", text)}
+          options={tabCapOptions}
+        />
+      ) : (
+        <MyDropdownPicker
+          style={styles.inputLeft}
+          value={medication.tabCap}
+          onChanged={(text) => onMedicationChange(index, "tabCap", text)}
+          options={tabCapOptions}
+          zIndex={2000}
+          zIndexInverse={2000}
+        />
+      )} */}
+
       <DropdownRegistration
         style={styles.inputLeft}
-        // label="Tab/Cap"
         value={medication.tabCap}
         onChanged={(text) => onMedicationChange(index, "tabCap", text)}
         options={tabCapOptions}
       />
+
       <TextInput
         style={styles.inputCenter}
         placeholder="Medication Name"
@@ -50,6 +76,26 @@ const MedicationRow = ({
         onChanged={(text) => onMedicationChange(index, "howOften", text)}
         options={frequencyOptions}
       />
+      {/* {Platform.OS === "ios" ? (
+        <DropdownRegistration
+          style={styles.inputRight}
+          // label="How Often"
+          value={medication.howOften}
+          onChanged={(text) => onMedicationChange(index, "howOften", text)}
+          options={frequencyOptions}
+        />
+      ) : (
+        <MyDropdownPicker
+          style={styles.inputRight}
+          // label="How Often"
+          value={medication.howOften}
+          onChanged={(text) => onMedicationChange(index, "howOften", text)}
+          options={frequencyOptions}
+          zIndex={1000}
+          zIndexInverse={3000}
+        />
+      )} */}
+
       <Pressable onPress={() => onRemoveMedication(index)}>
         <Text style={styles.removeButton}> - </Text>
       </Pressable>
