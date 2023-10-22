@@ -369,7 +369,6 @@ export default function UpdateProfileScreen({ route }) {
               value={doctorRegistrationDetails.mobileNo.value}
               style={styles.rowInput}
               invalid={!doctorRegistrationDetails.mobileNo.isValid}
-              mandatory
             />
             <Input
               label="E-mail"

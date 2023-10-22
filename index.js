@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import App from "./App";
 import { PersistGate } from "redux-persist/integration/react";
 import { AppContextProvider } from "./context/AppContext";
+import registerRootComponent from "expo/build/launch/registerRootComponent";
 
 export default function Main() {
   return (
@@ -16,3 +17,5 @@ export default function Main() {
     </Provider>
   );
 }
+
+registerRootComponent(Main);

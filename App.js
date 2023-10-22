@@ -17,7 +17,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { GlobalStyles } from "./constants/styles";
 import GraphsScreen from "./screens/ViewGraphsScreen";
 import LoginScreen from "./screens/LoginScreen";
-import { useSelector, useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { useAppContext } from "./context/AppContext";
 import CustomHeader from "./components/UI/CustomHeader";

@@ -57,7 +57,7 @@ const SearchDoctor = ({ handleSelectedDoctor }) => {
   };
 
   const getAllDoctors = async () => {
-    const url = `${BACKEND_URL}api/doctors`;
+    const url = `${process.env.BACKEND_URL}api/doctors`;
 
     const response = await axios.get(url);
 

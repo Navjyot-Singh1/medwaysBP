@@ -131,7 +131,7 @@ export default function RegistrationScreen({ route }) {
   const handleRegistration = () => {
     //Check if the mobile number is already registered and do not allow registration if it is already registered
 
-    const url = BACKEND_URL + "api/users/check";
+    const url = process.env.BACKEND_URL + "api/users/check";
     console.log("url", url);
     const requestBody = {
       uid:

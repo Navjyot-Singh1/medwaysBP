@@ -39,7 +39,7 @@ export const AppContextProvider = ({ children }) => {
     if (isLoggedIn) {
       if (type === "Doctor") {
         axios
-          .get(`${BACKEND_URL}api/doctors/${phoneNumber}`)
+          .get(`${process.env.BACKEND_URL}api/doctors/${phoneNumber}`)
           .then((res) => {
             setLoggedInUserDetails(res.data);
           })
@@ -48,7 +48,7 @@ export const AppContextProvider = ({ children }) => {
           });
       } else if (type === "Patient") {
         axios
-          .get(`${BACKEND_URL}api/patients/${phoneNumber}`)
+          .get(`process.env.${BACKEND_URL}api/patients/${phoneNumber}`)
           .then((res) => {
             setLoggedInUserDetails(res.data);
           })
