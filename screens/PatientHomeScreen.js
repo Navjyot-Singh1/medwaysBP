@@ -98,7 +98,7 @@ export default PatientHomeScreen = () => {
       patientId: patientId,
     };
 
-    const url = BACKEND_URL + "api/readings/patient";
+    const url = process.env.BACKEND_URL + "api/readings/patient";
     const response = await axios.post(url, requestBody);
 
     if (response.data.length === 0) {
@@ -113,7 +113,7 @@ export default PatientHomeScreen = () => {
       patientId: patientId,
     };
 
-    const url = BACKEND_URL + "api/readings/patient";
+    const url = process.env.BACKEND_URL + "api/readings/patient";
 
     const response = await axios.post(url, requestBody);
 
@@ -125,7 +125,6 @@ export default PatientHomeScreen = () => {
   };
 
   const handleReadingClick = (reading) => {
-   
     setSelectedReading(reading);
     setTimeout(() => {
       setIsUpdateModalVisible(true);
@@ -144,7 +143,7 @@ export default PatientHomeScreen = () => {
       timestamp: newReading.dateTime,
       patientId: patientId,
     };
-    const url = BACKEND_URL + "api/readings";
+    const url = process.env.BACKEND_URL + "api/readings";
     const response = await axios.post(url, requestBody);
 
     if (response.status === 200) {
@@ -157,8 +156,6 @@ export default PatientHomeScreen = () => {
   };
 
   const handleUpdateReading = async (updatedReading) => {
-   
-
     const requestBody = {
       actionsTaken: updatedReading.actionsTaken,
       diastolicPressure: updatedReading.diastolic,
@@ -169,7 +166,7 @@ export default PatientHomeScreen = () => {
       timestamp: updatedReading.dateTime,
     };
 
-    const url = BACKEND_URL + "api/readings/" + selectedReading.id;
+    const url = process.env.BACKEND_URL + "api/readings/" + selectedReading.id;
     const response = await axios.put(url, requestBody);
 
     if (response.status === 200) {

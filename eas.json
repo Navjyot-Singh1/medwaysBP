@@ -1,0 +1,38 @@
+{
+  "cli": {
+    "version": ">= 5.4.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "BACKEND_URL": "https://d87f-49-36-8-77.ngrok-free.app/",
+        "FIREBASE_API_KEY": "AIzaSyBa1D7bIRM78hzLdO6ysRioTF96RHfiRqM",
+        "FIREBASE_AUTH_DOMAIN": "medways-bp-tracker-4c1fe.firebaseapp.com",
+        "FIREBASE_PROJECT_ID": "medways-bp-tracker-4c1fe",
+        "FIREBASE_STORAGE_BUCKET": "medways-bp-tracker-4c1fe.appspot.com",
+        "FIREBASE_MESSAGING_SENDER_ID": "555071872161",
+        "FIREBASE_APP_ID": "1:555071872161:web:eea9076dd25cea2570e4e0",
+        "FIREBASE_MEASUREMENT_ID": "G-6QVV4DNDYJ"
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}

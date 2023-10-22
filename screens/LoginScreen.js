@@ -28,12 +28,14 @@ const LoginScreen = ({ route }) => {
   };
 
   const checkIfUserExists = () => {
-    const url = `${BACKEND_URL}api/${type.toLowerCase()}s/${mobileNumber}`;
+    const url = `${
+      process.env.BACKEND_URL
+    }api/${type.toLowerCase()}s/${mobileNumber}`;
+    console.log(url);
 
     axios
       .get(url)
       .then((res) => {
-       
         if (res.status === 404) {
           Alert.alert("User does not exist. Please register first.");
         } else {

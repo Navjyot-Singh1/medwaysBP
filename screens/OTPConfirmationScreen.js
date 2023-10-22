@@ -28,7 +28,6 @@ import { useAppContext } from "../context/AppContext";
 
 const OTPConfirmationScreen = ({ route }) => {
   const auth = getAuth(app);
-  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const { phoneNumber } = route.params;
@@ -135,7 +134,7 @@ const OTPConfirmationScreen = ({ route }) => {
       AsyncStorage.setItem("userId", user.uid);
       AsyncStorage.setItem("user_type", type);
       AsyncStorage.setItem("phoneNumber", phoneNumber);
-     
+
       login();
 
       if (navType === "Login") {
@@ -156,13 +155,13 @@ const OTPConfirmationScreen = ({ route }) => {
     let url = "";
     let reqBody = {};
     if (type === "Patient") {
-      url = BACKEND_URL + "api/patients";
+      url = process.env.BACKEND_URL + "api/patients";
       reqBody = {
         ...patientRegistrationDetails,
         PatientId: phoneNumber,
       };
     } else {
-      url = BACKEND_URL + "api/doctors";
+      url = process.env.BACKEND_URL + "api/doctors";
       reqBody = {
         ...doctorRegistrationDetails,
         DoctorID: phoneNumber,
@@ -193,7 +192,7 @@ const OTPConfirmationScreen = ({ route }) => {
       setErrorMessage("");
       const phoneNo = "+91" + phoneNumber;
       // Send OTP to the provided phone number
-     
+
       const confirmation = await signInWithPhoneNumber(
         auth,
         phoneNo,

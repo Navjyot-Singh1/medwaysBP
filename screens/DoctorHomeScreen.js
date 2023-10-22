@@ -15,16 +15,11 @@ import {
 import AddNewReadingModal from "../components/Functional/AddNewReadingModal";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../constants/styles";
-import Title from "../components/UI/Title";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ReadingItem from "../components/UI/ReadingItem";
-
-// import { useSelector, useDispatch } from 'react-redux';
-// import { searchPatientsAction } from '../redux/actions/patientActions';
 
 const patientList = [
   {
@@ -156,7 +151,7 @@ const DoctorHomeScreen = () => {
       timestamp: newReading.dateTime,
       patientId: selectedPatient.id,
     };
-    const url = BACKEND_URL + "api/readings";
+    const url = process.env.BACKEND_URL + "api/readings";
     const response = await axios.post(url, requestBody);
 
     if (response.status === 200) {
@@ -179,7 +174,7 @@ const DoctorHomeScreen = () => {
       timestamp: updatedReading.dateTime,
     };
 
-    const url = BACKEND_URL + "api/readings/" + selectedReading.id;
+    const url = process.env.BACKEND_URL + "api/readings/" + selectedReading.id;
     const response = await axios.put(url, requestBody);
 
     if (response.status === 200) {
@@ -196,7 +191,7 @@ const DoctorHomeScreen = () => {
       patientId: patientId,
     };
 
-    const url = BACKEND_URL + "api/readings/patient";
+    const url = process.env.BACKEND_URL + "api/readings/patient";
     setLoading(true);
     const response = await axios.post(url, requestBody);
 
@@ -213,7 +208,7 @@ const DoctorHomeScreen = () => {
   const getAllPatients = async (doctorId) => {
     //API is in the form of req.params.doctorId
     axios
-      .get(`${BACKEND_URL}api/patients/doctors/${doctorId}`)
+      .get(`${process.env.BACKEND_URL}api/patients/doctors/${doctorId}`)
       .then((response) => {
         setPatientList(response.data);
         setFilteredPatientList(response.data);
@@ -224,11 +219,11 @@ const DoctorHomeScreen = () => {
   };
 
   const getDoctorDetails = async () => {
-    console.log("BACKEND_URL", BACKEND_URL);
+    console.log("BACKEND_URL", process.env.BACKEND_URL);
     AsyncStorage.getItem("phoneNumber").then((phoneNo) => {
       //API is in the form of req.params.id
       axios
-        .get(`${BACKEND_URL}api/doctors/${phoneNo}`)
+        .get(`${process.env.BACKEND_URL}api/doctors/${phoneNo}`)
         .then((response) => {
           setDoctor(response.data);
           getAllPatients(response.data.id);
@@ -249,8 +244,6 @@ const DoctorHomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    // Dispatch an action to search for patients when the component mounts or searchQuery changes
-    // dispatch(searchPatientsAction(searchQuery));
     if (searchQuery === "") {
       setFilteredPatientList(patientList);
     } else {

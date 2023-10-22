@@ -7,6 +7,7 @@ import {
   Modal,
   StyleSheet,
   KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 import Input from "../UI/Input";
@@ -126,44 +127,50 @@ const AddNewReadingModal = ({ visible, onClose, onSave, reading }) => {
           />
         </View>
         <View style={styles.inputsRow}>
-          {/* <Dropdown
-            label="Symptoms"
-            onChanged={setSymptoms}
-            options={symptomsOptions}
-            value={symptoms}
-            style={styles.rowInput}
-          /> */}
-          <MyDropdownPicker
-            label="Symptoms"
-            onChanged={setSymptoms}
-            options={symptomsOptions}
-            value={symptoms}
-            style={styles.rowInput}
-            placeholder="Select Symptoms"
-            zIndex={3000}
-            zIndexInverse={1000}
-            mandatory
-          />
+          {Platform.OS === "ios" ? (
+            <MyDropdownPicker
+              label="Symptoms"
+              onChanged={(e) => setSymptoms(e.value)}
+              options={symptomsOptions}
+              value={symptoms}
+              style={styles.rowInput}
+              placeholder="Select Symptoms"
+              mandatory
+            />
+          ) : (
+            <MyDropdownPicker
+              label="Symptoms"
+              onChanged={(e) => setSymptoms(e.value)}
+              options={symptomsOptions}
+              value={symptoms}
+              style={styles.rowInput}
+              placeholder="Select Symptoms"
+              mandatory
+            />
+          )}
         </View>
         <View style={styles.inputsRow}>
-          {/* <Dropdown
-            label="Actions Taken"
-            onChanged={setActionsTaken}
-            options={actionsOptions}
-            value={actionsTaken}
-            style={styles.rowInput}
-          /> */}
-          <MyDropdownPicker
-            label="Actions Taken"
-            onChanged={setActionsTaken}
-            options={actionsOptions}
-            value={actionsTaken}
-            style={styles.rowInput}
-            placeholder="Select Actions Taken"
-            zIndex={2000}
-            zIndexInverse={2000}
-            mandatory
-          />
+          {Platform.OS === "ios" ? (
+            <MyDropdownPicker
+              label="Actions Taken"
+              onChanged={(e) => setActionsTaken(e.value)}
+              options={actionsOptions}
+              value={actionsTaken}
+              style={styles.rowInput}
+              placeholder="Select Actions Taken"
+              mandatory
+            />
+          ) : (
+            <MyDropdownPicker
+              label="Actions Taken"
+              onChanged={(e) => setActionsTaken(e.value)}
+              options={actionsOptions}
+              value={actionsTaken}
+              style={styles.rowInput}
+              placeholder="Select Actions Taken"
+              mandatory
+            />
+          )}
         </View>
 
         <View style={styles.buttonsContainer}>
@@ -215,6 +222,7 @@ const styles = StyleSheet.create({
   inputsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    elevation: 10,
   },
   inputRowPulse: {
     flexDirection: "row",

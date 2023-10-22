@@ -22,6 +22,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalStyles } from "../constants/styles";
 import MedicationRow from "../components/Functional/MedicationRow";
+import MyDropdownPicker from "../components/UI/MyDropdownPicker";
 
 export default function RegistrationScreen({ route }) {
   const { type } = route.params;
@@ -92,6 +93,11 @@ export default function RegistrationScreen({ route }) {
     { text: "Female", value: "Female" },
   ];
 
+  const genderOptions2 = [
+    { label: "Male", value: "Male" },
+    { label: "Female", value: "Female" },
+  ];
+
   const addMedicationRow = () => {
     setMedications([
       ...medications,
@@ -125,13 +131,15 @@ export default function RegistrationScreen({ route }) {
   const handleRegistration = () => {
     //Check if the mobile number is already registered and do not allow registration if it is already registered
 
-    const url = BACKEND_URL + "api/users/check";
+    const url = process.env.BACKEND_URL + "api/users/check";
+    console.log("url", url);
     const requestBody = {
       uid:
         type === "Patient"
           ? registrationDetails.mobileNo.value
           : doctorRegistrationDetails.mobileNo.value,
     };
+    console.log("requestBody", requestBody);
 
     axios
       .post(url, requestBody)
@@ -238,6 +246,29 @@ export default function RegistrationScreen({ route }) {
               />
             </View>
             <View style={styles.inputsRow}>
+              {/* {Platform.OS === "ios" ? (
+                <Dropdown
+                  label="Sex"
+                  onChanged={setPatientSex}
+                  options={genderOptions}
+                  style={styles.rowInput}
+                  value={patientSex}
+                  placeholder="Select Gender"
+                  mandatory
+                />
+              ) : (
+                <MyDropdownPicker
+                  label="Sex"
+                  onChanged={setPatientSex}
+                  options={genderOptions2}
+                  value={patientSex}
+                  style={styles.rowInput}
+                  placeholder="Select Gender"
+                  // zIndex={2000}
+                  // zIndexInverse={2000}
+                  mandatory
+                />
+              )} */}
               <Dropdown
                 label="Sex"
                 onChanged={setPatientSex}
@@ -247,6 +278,7 @@ export default function RegistrationScreen({ route }) {
                 placeholder="Select Gender"
                 mandatory
               />
+
               <Input
                 label="Mobile Number"
                 textInputConfig={{

@@ -7,12 +7,13 @@ import axios from "axios";
 const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
+  console.log("AppContextProvider");
   const [appRerenderKey, setAppRerenderKey] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [type, setType] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState(null);
   const [loggedInUserDetails, setLoggedInUserDetails] = useState({});
-
+  console.log("AppContextProvider", isLoggedIn, type, phoneNumber);
   const checkLoginData = () => {
     AsyncStorage.getItem("phoneNumber").then((phoneNumber) => {
       if (phoneNumber) {
@@ -38,7 +39,7 @@ export const AppContextProvider = ({ children }) => {
     if (isLoggedIn) {
       if (type === "Doctor") {
         axios
-          .get(`${BACKEND_URL}api/doctors/${phoneNumber}`)
+          .get(`${process.env.BACKEND_URL}api/doctors/${phoneNumber}`)
           .then((res) => {
             setLoggedInUserDetails(res.data);
           })
@@ -47,7 +48,7 @@ export const AppContextProvider = ({ children }) => {
           });
       } else if (type === "Patient") {
         axios
-          .get(`${BACKEND_URL}api/patients/${phoneNumber}`)
+          .get(`process.env.${BACKEND_URL}api/patients/${phoneNumber}`)
           .then((res) => {
             setLoggedInUserDetails(res.data);
           })
